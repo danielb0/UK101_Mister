@@ -33,6 +33,7 @@ entity uk101 is
 		r				:	out std_logic;
 		g				:	out std_logic;
 		b				:	out std_logic;
+		colours		:	in std_logic_vector(1 downto 0);
 		hblank		:	out std_logic;
 		vblank		:	out std_logic;
 		ps2Clk		: in std_logic;
@@ -208,6 +209,7 @@ begin
 		VIDEO_CLK => video_clock,
 		hsync_out => hsync,
 		vsync_out => vsync,
+		colours => colours,
 		r => r,
 		g => g,
 		b => b,

@@ -23,6 +23,7 @@ entity vga is
 		vsync_out			:	out std_logic;
 		hblank		:	out std_logic;
 		vblank		:	out std_logic;
+		colours		:	in std_logic_vector(1 downto 0);
 		r				:	out std_logic;
 		g				:	out std_logic;
 		b				:	out std_logic
@@ -138,9 +139,9 @@ constant hVAhFPhSP : unsigned(10 downto 0):=to_unsigned(h_Visible_area,11)+to_un
 constant vVAvFP : unsigned(9 downto 0):=to_unsigned(v_Visible_area,10)+to_unsigned(v_Front_porch,10)-1;
 constant vVAvFPvSP : unsigned(9 downto 0):=to_unsigned(v_Visible_area,10)+to_unsigned(v_Front_porch,10)+to_unsigned(v_Sync_pulse,10)-1;
 
-constant BorderCol			: unsigned(15 downto 0):="0000000000011111";
-constant ScreenCol			: unsigned(15 downto 0):="0000000000011111";
-constant CharCol				: unsigned(15 downto 0):="1111111111111111";
+signal BorderCol			: unsigned(15 downto 0):="0000000000011111";
+signal ScreenCol			: unsigned(15 downto 0):="0000000000011111";
+signal CharCol				: unsigned(15 downto 0):="1111111111111111";
 
 signal Pixel_Colour			: unsigned(15 DOWNTO 0) := "0000000000000000";
 signal VGAout					: unsigned(17 downto 0);
@@ -389,7 +390,39 @@ DrawApp : PROCESS (VIDEO_CLK, RST)
 
 BEGIN
 	IF (rising_edge(VIDEO_CLK)) THEN
-
+		if colours = B"00" then
+				
+				BorderCol <= "0000000000011111";
+				ScreenCol <= "0000000000011111";
+				CharCol <= "1111111111111111";
+			
+		elsif colours = B"01" then
+				
+				BorderCol <= "0000000000000000";
+				ScreenCol <= "0000000000000000";
+				CharCol <= "1111111111111111";
+			
+		elsif colours = B"10" then
+				
+				BorderCol <= "0000000000000000";
+				ScreenCol <= "0000000000000000";
+				CharCol <= "0000011111100000";
+			
+		elsif colours = B"11" then
+				
+				BorderCol <= "0000000000000000";
+				ScreenCol <= "0000000000000000";
+				CharCol <= "1111111111100000";
+			
+		else
+				
+				BorderCol <= "0000000000011111";
+				ScreenCol <= "0000000000011111";
+				CharCol <= "1111111111111111";
+			
+		end if;
+		
+			
 		Ye0vp1 := (Y0vp1_d10 - 100)/128;
 		Xe0vp1 := (X0vp1_d10 - 80)/128;
 		pixels := Xe0vp1(2 DOWNTO 0);

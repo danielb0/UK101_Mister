@@ -199,6 +199,7 @@ localparam CONF_STR = {
 	"Compukit UK101;;",
 	"-;",
 	"O89,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
+	"O34,Colours,White on blue,White on black,Green on black,Yellow on black;",
 	"RA,Reset;",
 	"-;",
 	"-;",
@@ -214,7 +215,10 @@ wire  [1:0] buttons;
 wire [31:0] status;
 wire PS2_CLK;
 wire PS2_DAT;
+wire [1:0] colour_scheme = status[4:3];
 wire forced_scandoubler;
+
+
 
 hps_io #(.CONF_STR(CONF_STR),.PS2DIV(2000)) hps_io
 (
@@ -269,6 +273,7 @@ uk101 uk101
 	.r(r),			
 	.g(g),
 	.b(b),
+	.colours(colour_scheme),
 	.rxd(UART_RXD),
 	.txd(UART_TXD),
 	.rts(UART_RTS)
