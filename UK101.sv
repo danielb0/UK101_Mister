@@ -208,7 +208,7 @@ assign LED_USER  = 1;
 
 `include "build_id.v"
 localparam CONF_STR = {
-	"Compukit UK101;;",
+	"UK101;;",
 	"-;",
 	"O89,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
 	"O34,Colours,White on blue,White on black,Green on black,Yellow on black;",
