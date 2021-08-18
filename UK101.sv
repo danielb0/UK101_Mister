@@ -212,6 +212,7 @@ localparam CONF_STR = {
 	"-;",
 	"O89,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
 	"O34,Colours,White on blue,White on black,Green on black,Yellow on black;",
+	"O55,Resolution,64x32,48x16;",
 	"RA,Reset;",
 	"-;",
 	"-;",
@@ -228,6 +229,7 @@ wire [31:0] status;
 wire PS2_CLK;
 wire PS2_DAT;
 wire [1:0] colour_scheme = status[4:3];
+wire resolution = status[5];
 wire forced_scandoubler;
 
 
@@ -286,6 +288,7 @@ uk101 uk101
 	.g(g),
 	.b(b),
 	.colours(colour_scheme),
+	.resolution(resolution),
 	.rxd(UART_RXD),
 	.txd(UART_TXD),
 	.rts(UART_RTS)
