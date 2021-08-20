@@ -213,6 +213,7 @@ localparam CONF_STR = {
 	"O89,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
 	"O34,Colours,White on blue,White on black,Green on black,Yellow on black;",
 	"O55,Screen size,64x32,48x16;",
+	"O66,Monitor Type,Cegmon,NewMon;",
 	"RA,Reset;",
 	"-;",
 	"-;",
@@ -230,6 +231,7 @@ wire PS2_CLK;
 wire PS2_DAT;
 wire [1:0] colour_scheme = status[4:3];
 wire resolution = status[5];
+wire monitor_type=status[6];
 wire forced_scandoubler;
 
 
@@ -289,6 +291,7 @@ uk101 uk101
 	.b(b),
 	.colours(colour_scheme),
 	.resolution(resolution),
+	.monitor_type(monitor_type),
 	.rxd(UART_RXD),
 	.txd(UART_TXD),
 	.rts(UART_RTS)
