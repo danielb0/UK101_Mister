@@ -174,7 +174,7 @@ signal hcount_d12,hcount_d13							: unsigned(10 downto 0):="00000000000";
 
 begin
 
-scaler_height <= 70 when resolution = '0' else 34;
+scaler_height <= 70 when resolution = '0' else 36;
 
 ---------------------------------------------------------
 --                                                     --
