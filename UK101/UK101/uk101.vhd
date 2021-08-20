@@ -231,6 +231,7 @@ begin
 		vsync_out => vsync,
 		colours => colours,
 		resolution => resolution,
+		monitor_type => monitor_type,
 		r => r,
 		g => g,
 		b => b,

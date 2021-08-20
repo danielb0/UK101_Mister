@@ -25,6 +25,7 @@ entity vga is
 		vblank		:	out std_logic;
 		colours		:	in std_logic_vector(1 downto 0);
 		resolution	: in std_logic;
+		monitor_type	: in std_logic;
 		r				:	out std_logic;
 		g				:	out std_logic;
 		b				:	out std_logic
@@ -174,7 +175,9 @@ signal hcount_d12,hcount_d13							: unsigned(10 downto 0):="00000000000";
 
 begin
 
-scaler_height <= 70 when resolution = '0' else 36;
+scaler_height <= 	70 when resolution = '0' else 
+						35 when resolution = '1' and monitor_type='0' else
+						35 when resolution = '1' and monitor_type='1';
 
 ---------------------------------------------------------
 --                                                     --
