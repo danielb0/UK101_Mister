@@ -212,7 +212,7 @@ localparam CONF_STR = {
 	"-;",
 	"O89,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
 	"O34,Colours,White on blue,White on black,Green on black,Yellow on black;",
-	"O55,Screen size,64x32,48x16;",
+	"D0O55,Screen size,64x32,48x16;",
 	"O66,Monitor Type,Cegmon,NewMon;",
 	"RA,Reset;",
 	"-;",
@@ -230,8 +230,9 @@ wire [31:0] status;
 wire PS2_CLK;
 wire PS2_DAT;
 wire [1:0] colour_scheme = status[4:3];
-wire resolution = status[5];
+wire resolution;
 wire monitor_type=status[6];
+assign resolution = monitor_type ? 1 : status[5];
 wire forced_scandoubler;
 
 
@@ -244,7 +245,8 @@ hps_io #(.CONF_STR(CONF_STR),.PS2DIV(2000)) hps_io
 	.status(status),
 	.ps2_kbd_clk_out(PS2_CLK),
 	.ps2_kbd_data_out(PS2_DAT),
-	.forced_scandoubler(forced_scandoubler)
+	.forced_scandoubler(forced_scandoubler),
+	.status_menumask({status[6]})
 
 
 );
