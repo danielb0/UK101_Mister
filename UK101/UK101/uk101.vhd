@@ -93,12 +93,9 @@ begin
 	cpuDataIn <=
 		    -- CEGMON PATCH FOR 64x32 SCREEN
 		x"3F" when cpuAddress = x"FBBC" and resolution='0' and monitor_type ='0' else -- CEGMON SWIDTH (was $47)
-		--x"3F" when cpuAddress = x"0222" and resolution='0' and monitor_type ='0' else -- CEGMON SWIDTH (was $47)
 		x"00" when cpuAddress = x"FBBD" and resolution='0' and monitor_type ='0' else -- CEGMON TOP L (was $0C (1st line) or $8C (3rd line))
 		x"BF" when cpuAddress = x"FBBF" and resolution='0' and monitor_type ='0' else -- CEGMON BASE L (was $CC)
 		x"D7" when cpuAddress = x"FBC0" and resolution='0' and monitor_type ='0' else -- CEGMON BASE H (was $D3)
-		--x"BF" when cpuAddress = x"0225" and resolution='0' and monitor_type ='0' else -- CEGMON BASE L (was $CC)
-		--x"D7" when cpuAddress = x"0226" and resolution='0' and monitor_type ='0' else -- CEGMON BASE H (was $D3)
 		x"00" when cpuAddress = x"FBC2" and resolution='0' and monitor_type ='0' else -- CEGMON STARTUP TOP L (was $0C (1st line) or $8C (3rd line))
 		x"00" when cpuAddress = x"FBC5" and resolution='0' and monitor_type ='0' else -- CEGMON STARTUP TOP L (was $0C (1st line) or $8C (3rd line))
 		x"00" when cpuAddress = x"FBCB" and resolution='0' and monitor_type ='0' else -- CEGMON STARTUP TOP L (was $0C (1st line) or $8C (3rd line))
@@ -107,12 +104,9 @@ begin
 		x"D7" when cpuAddress = x"FE3B" and resolution='0' and monitor_type ='0' else -- CEGMON SCREEN BOTTOM H - 1 (was $D3) - Part of CTRL-A code
 		
 		x"2F" when cpuAddress = x"FBBC" and resolution='1' and monitor_type ='0' else -- CEGMON SWIDTH (was $47)
-		--x"2F" when cpuAddress = x"0222" and resolution='1' and monitor_type ='0' else -- CEGMON SWIDTH (was $47)
 		x"00" when cpuAddress = x"FBBD" and resolution='1' and monitor_type ='0' else -- CEGMON TOP L (was $0C (1st line) or $8C (3rd line))
 		x"85" when cpuAddress = x"FBBF" and resolution='1' and monitor_type ='0' else -- CEGMON BASE L (was $CC)
 		x"D3" when cpuAddress = x"FBC0" and resolution='1' and monitor_type ='0' else -- CEGMON BASE H (was $D3)
-		--x"85" when cpuAddress = x"0225" and resolution='1' and monitor_type ='0' else -- CEGMON BASE L (was $CC)
-		--x"D3" when cpuAddress = x"0226" and resolution='1' and monitor_type ='0' else -- CEGMON BASE H (was $D3)
 		x"00" when cpuAddress = x"FBC2" and resolution='1' and monitor_type ='0' else -- CEGMON STARTUP TOP L (was $0C (1st line) or $8C (3rd line))
 		x"00" when cpuAddress = x"FBC5" and resolution='1' and monitor_type ='0' else -- CEGMON STARTUP TOP L (was $0C (1st line) or $8C (3rd line))
 		x"00" when cpuAddress = x"FBCB" and resolution='1' and monitor_type ='0' else -- CEGMON STARTUP TOP L (was $0C (1st line) or $8C (3rd line))
