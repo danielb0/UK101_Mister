@@ -79,10 +79,13 @@ architecture struct of uk101 is
 	signal kbReadData 	: std_logic_vector(7 downto 0);
 	signal kbRowSel 		: std_logic_vector(7 downto 0);
 	--signal video_clock		: std_ulogic;
+	
+	--serial clock count thresholds
 	constant c_9600BaudClkCount1 : integer:=325;
 	constant c_9600BaudClkCount2 : integer:=162;
 	constant c_300BaudClkCount1 : integer:=10416;
 	constant c_300BaudClkCount2 : integer:=5208;
+	
 	signal serialClkCount1: integer := 0;
 	signal serialClkCount2: integer := 0;
 	
@@ -205,14 +208,13 @@ begin
 				cpuClock <= '1';
 			end if;	
 			
---			if serialClkCount < 10416 then -- 300 baud
-			if serialClkCount < serialClkCount1 then -- 9600 baud
+			if serialClkCount < serialClkCount1 then
 				serialClkCount <= serialClkCount + 1;
 			else
 				serialClkCount <= (others => '0');
 			end if;
---			if serialClkCount < 5208 then -- 300 baud
-			if serialClkCount < serialClkCount2 then -- 9600 baud
+
+			if serialClkCount < serialClkCount2 then 
 				serialClock <= '0';
 			else
 				serialClock <= '1';
