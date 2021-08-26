@@ -1,3 +1,4 @@
+set_global_assignment -name VERILOG_FILE UK101/Components/UART/ascii_input.v
 set_global_assignment -name VHDL_FILE UK101/Components/UART/bufferedUART.vhd
 set_global_assignment -name VHDL_FILE UK101/Components/TV/vga.vhd
 set_global_assignment -name VHDL_FILE UK101/Components/PS2KB/UK101keyboard.vhd

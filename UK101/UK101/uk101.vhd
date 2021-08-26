@@ -40,7 +40,11 @@ entity uk101 is
 		hblank		:	out std_logic;
 		vblank		:	out std_logic;
 		ps2Clk		: in std_logic;
-		ps2Data		: in std_logic
+		ps2Data		: in std_logic;
+		--load text files directly
+      ioctl_download: in std_logic;       					-- download available
+      textinput_dout: in std_logic_vector(7 downto 0); 	-- text data
+	   textinput_addr: in std_logic_vector(15 downto 0) 	-- text address
 	);
 end uk101;
 
@@ -89,6 +93,35 @@ architecture struct of uk101 is
 	signal serialClkCount1: integer := 0;
 	signal serialClkCount2: integer := 0;
 	
+		
+    -- ascii interface
+   signal text_dout: std_logic_vector(7 downto 0);
+   signal ascii_data_ready: std_logic;
+	signal text_cs: std_logic;
+	 
+	signal rx_cs : std_logic;
+	signal tx_cs : std_logic;
+	
+	
+	component ascii_input is 
+	port (
+    clk25: in std_logic;      -- 25MHz clock
+    rst: in std_logic;        -- active high reset
+
+    -- I/O interface to keyboard
+    key_clk: in std_logic;    -- clock input from keyboard / device
+    ioctl_download: in std_logic;
+    textinput_dout: in std_logic_vector(7 downto 0);
+    textinput_addr: in std_logic_vector(15 downto 0);
+
+    --I/O interface to computer
+    cs: in std_logic;        -- chip select, active high
+    address: in std_logic;    -- =0 RX buffer, =1 RX status
+    dout: out std_logic_vector(7 downto 0);   --8-bit output bus.
+    data_ready: out std_logic -- 8-bit output bus.
+	);
+	end component ascii_input;
+	
 
 
 begin
@@ -104,6 +137,11 @@ begin
 	n_ramCS <= '0' when cpuAddress(15) = '0' else '1';
 	n_aciaCS <= '0' when cpuAddress(15 downto 1) = "111100000000000" else '1';
 	n_kbCS <= '0' when cpuAddress(15 downto 10) = "110111" else '1';
+	
+	--ascii interface
+	rx_cs <= '1' when cpuAddress(15 downto 1)  = B"110100000001000";     -- 0xD010 -> 0xD011
+   tx_cs <= '1' when cpuAddress(15 downto 1) = B"110100000001001"; -- 0xD012 -> 0xD013
+   text_cs <= rx_cs and ascii_data_ready;
  
 	cpuDataIn <=
 		    -- CEGMON PATCH FOR 64x32 SCREEN
@@ -193,6 +231,24 @@ begin
 		n_dcd => '0',
 		n_rts => rts
 	);
+	
+	--ascii interface
+	
+	 ascii_in:  component ascii_input 
+	 port map(
+		  clk25 => video_clock,
+		  rst => n_reset,
+		  key_clk => ps2Clk,
+		  cs => rx_cs,
+		  address => cpuAddress(0),
+		  ioctl_download => ioctl_download,
+		  textinput_dout => textinput_dout,
+		  textinput_addr => textinput_addr,
+		  dout => text_dout,
+		  data_ready => ascii_data_ready
+	 );
+		
+	
 
 	process (clk)
 	begin
