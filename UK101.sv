@@ -175,7 +175,8 @@ assign LED_USER  = 1;
 `include "build_id.v"
 localparam CONF_STR = {
 	"UK101;;",
-	"F,TXT,Load Ascii;",
+	"OBB,Load from,File,UART;",
+	"D1F,TXT,Load Ascii;",
 	"-;",
 	"O89,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
 	"O34,Colours,White on blue,White on black,Green on black,Yellow on black;",
@@ -201,8 +202,10 @@ wire [1:0] colour_scheme = status[4:3];
 wire resolution;
 wire monitor_type=status[6];
 wire baud_rate=status[7];
+wire load_from=status[11];
 assign resolution = monitor_type ? 1 : status[5];
 wire forced_scandoubler;
+wire ps2_select = 1;
 
 
 
@@ -215,7 +218,7 @@ hps_io #(.CONF_STR(CONF_STR),.PS2DIV(2000)) hps_io
 	.ps2_kbd_clk_out(PS2_CLK),
 	.ps2_kbd_data_out(PS2_DAT),
 	.forced_scandoubler(forced_scandoubler),
-	.status_menumask({status[6]})
+	.status_menumask({status[11],status[6]})
 
 
 );
@@ -264,9 +267,11 @@ uk101 uk101
 	.resolution(resolution),
 	.monitor_type(monitor_type),
 	.baud_rate(baud_rate),
+	.load_from(load_from),
 	.rxd(UART_RXD),
 	.txd(UART_TXD),
-	.rts(UART_RTS)
+	.rts(UART_RTS),
+	.ps2_select(ps2_select)
 );
 
 video_cleaner video_cleaner

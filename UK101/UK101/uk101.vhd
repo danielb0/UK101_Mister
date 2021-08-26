@@ -37,9 +37,11 @@ entity uk101 is
 		colours		:	in std_logic_vector(1 downto 0);
 		monitor_type : in std_logic;
 		baud_rate : in std_logic;
+		load_from : in std_logic; --0=load from file
 		hblank		:	out std_logic;
 		vblank		:	out std_logic;
 		ps2Clk		: in std_logic;
+		ps2_select	: in std_logic;
 		ps2Data		: in std_logic;
 		--load text files directly
       ioctl_download: in std_logic;       					-- download available
@@ -101,6 +103,8 @@ architecture struct of uk101 is
 	 
 	signal rx_cs : std_logic;
 	signal tx_cs : std_logic;
+	signal uart_cs: std_logic;
+	signal ps2kb_cs: std_logic;
 	
 	
 	component ascii_input is 
@@ -138,10 +142,22 @@ begin
 	n_aciaCS <= '0' when cpuAddress(15 downto 1) = "111100000000000" else '1';
 	n_kbCS <= '0' when cpuAddress(15 downto 10) = "110111" else '1';
 	
-	--ascii interface
-	rx_cs <= '1' when cpuAddress(15 downto 1)  = B"110100000001000";     -- 0xD010 -> 0xD011
-   tx_cs <= '1' when cpuAddress(15 downto 1) = B"110100000001001"; -- 0xD012 -> 0xD013
-   text_cs <= rx_cs and ascii_data_ready;
+
+
+
+   
+	--select UART on transmit but only receive when PS/2 is not selected.
+	--uart_cs <= tx_cs or ((not ps2_select) and rx_cs);
+	
+	--select PS/2 keyboard input when selected.
+   --ps2kb_cs <= ps2_select and rx_cs and (not text_cs);
+	
+	
+   --RX: Either keyboard or UART input
+   --TX: Always VGA and UART output
+	--rx_cs <= '1' when cpuAddress(15 downto 1)  = "110100000001000" else '0';     -- 0xD010 -> 0xD011
+   --tx_cs <= '1' when cpuAddress(15 downto 1) = "110100000001001"; -- 0xD012 -> 0xD013
+   --text_cs <= rx_cs and ascii_data_ready;
  
 	cpuDataIn <=
 		    -- CEGMON PATCH FOR 64x32 SCREEN
@@ -169,6 +185,7 @@ begin
 		basRomData when n_basRomCS = '0' else
 		monitorRomData when n_monitorRomCS = '0' else
 		aciaData when n_aciaCS = '0' else
+		text_dout when ioctl_download = '1' and  load_from = '0' else
 		ramDataOut when n_ramCS = '0' else
 		dispRamDataOutA when n_dispRamCS = '0' else
 		kbReadData when n_kbCS='0'
@@ -239,7 +256,7 @@ begin
 		  clk25 => video_clock,
 		  rst => n_reset,
 		  key_clk => ps2Clk,
-		  cs => rx_cs,
+		  cs => (not n_kbCS) and (not load_from),
 		  address => cpuAddress(0),
 		  ioctl_download => ioctl_download,
 		  textinput_dout => textinput_dout,

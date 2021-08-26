@@ -137,7 +137,7 @@ module ascii_input(
                 if (address == 1'b0)
                 begin
                     // RX buffer address
-                    dout <= {1'b1, ascii[6:0]};
+                    dout <=  ascii[7:0];
                  $display("put ascii  %x in_dl %x text_byte %x ascii_last_byte %x ascii_rdy %x",ascii,in_dl,text_byte,ascii_last_byte,ascii_rdy);
                     ascii_rdy <= 1'b0;
                 end
