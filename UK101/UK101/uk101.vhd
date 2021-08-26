@@ -43,6 +43,7 @@ entity uk101 is
 		ps2Clk		: in std_logic;
 		ps2_select	: in std_logic;
 		ps2Data		: in std_logic;
+		data_out		: out std_logic;
 		--load text files directly
       ioctl_download: in std_logic;       					-- download available
       textinput_dout: in std_logic_vector(7 downto 0); 	-- text data
@@ -129,7 +130,7 @@ architecture struct of uk101 is
 
 
 begin
-
+	data_out <= text_dout(0);
 	serialClkCount1 <= c_9600BaudClkCount1 when baud_rate = '0' else c_300BaudClkCount1;
 	serialClkCount2 <= c_9600BaudClkCount2 when baud_rate = '0' else c_300BaudClkCount2;
 
@@ -141,6 +142,7 @@ begin
 	n_ramCS <= '0' when cpuAddress(15) = '0' else '1';
 	n_aciaCS <= '0' when cpuAddress(15 downto 1) = "111100000000000" else '1';
 	n_kbCS <= '0' when cpuAddress(15 downto 10) = "110111" else '1';
+	
 	
 
 
@@ -185,10 +187,10 @@ begin
 		basRomData when n_basRomCS = '0' else
 		monitorRomData when n_monitorRomCS = '0' else
 		aciaData when n_aciaCS = '0' else
-		text_dout when ioctl_download = '1' and  load_from = '0' else
+		text_dout when ioctl_download = '1' and load_from = '0' else
 		ramDataOut when n_ramCS = '0' else
 		dispRamDataOutA when n_dispRamCS = '0' else
-		kbReadData when n_kbCS='0'
+		kbReadData when n_kbCS='0'and ioctl_download = '0'
 		else x"FF";
 		
 	u1 : entity work.T65
@@ -256,7 +258,7 @@ begin
 		  clk25 => video_clock,
 		  rst => n_reset,
 		  key_clk => ps2Clk,
-		  cs => (not n_kbCS) and (not load_from),
+		  cs => ioctl_download and (not load_from),
 		  address => cpuAddress(0),
 		  ioctl_download => ioctl_download,
 		  textinput_dout => textinput_dout,

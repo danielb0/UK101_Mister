@@ -141,7 +141,7 @@ module emu
 ///////// Default values for ports not used in this core /////////
 
 assign ADC_BUS  = 'Z;
-assign USER_OUT = '1;
+assign USER_OUT = '0;
 assign UART_DTR = 0;
 assign {SD_SCK, SD_MOSI, SD_CS} = 'Z;
 assign {SDRAM_DQ, SDRAM_A, SDRAM_BA, SDRAM_CLK, SDRAM_CKE, SDRAM_DQML, SDRAM_DQMH, SDRAM_nWE, SDRAM_nCAS, SDRAM_nRAS, SDRAM_nCS} = 'Z;
@@ -169,7 +169,7 @@ wire [1:0] ar = status[9:8];
 assign VIDEO_ARX = 4;
 assign VIDEO_ARY = 3;
 
-assign LED_USER  = 1;
+assign LED_USER  = temp_data;
 
 
 `include "build_id.v"
@@ -207,6 +207,13 @@ assign resolution = monitor_type ? 1 : status[5];
 wire forced_scandoubler;
 wire ps2_select = 1;
 
+wire        ioctl_download;
+wire        ioctl_wr;
+wire [15:0] ioctl_addr;
+wire [7:0] ioctl_data;
+wire  [7:0] ioctl_index;
+reg ioctl_wait=0;
+
 
 
 hps_io #(.CONF_STR(CONF_STR),.PS2DIV(2000)) hps_io
@@ -218,7 +225,14 @@ hps_io #(.CONF_STR(CONF_STR),.PS2DIV(2000)) hps_io
 	.ps2_kbd_clk_out(PS2_CLK),
 	.ps2_kbd_data_out(PS2_DAT),
 	.forced_scandoubler(forced_scandoubler),
-	.status_menumask({status[11],status[6]})
+	.status_menumask({status[11],status[6]}),
+	
+	.ioctl_download(ioctl_download),
+	.ioctl_wr(ioctl_wr),
+	.ioctl_addr(ioctl_addr),
+	.ioctl_dout(ioctl_data),
+	.ioctl_index(ioctl_index),
+	.ioctl_wait(ioctl_wait),
 
 
 );
@@ -247,6 +261,7 @@ assign CE_PIXEL = 1;
 wire r, g, b;
 wire vs,hs,de;
 wire hblank, vblank;
+wire temp_data;
 
 uk101 uk101
 (
@@ -271,8 +286,13 @@ uk101 uk101
 	.rxd(UART_RXD),
 	.txd(UART_TXD),
 	.rts(UART_RTS),
-	.ps2_select(ps2_select)
+	.ps2_select(ps2_select),
+	.data_out(temp_data),
+   .ioctl_download(ioctl_download && ioctl_index),
+   .textinput_dout(ioctl_data),
+   .textinput_addr(ioctl_addr[12:0]),
 );
+
 
 video_cleaner video_cleaner
 (
