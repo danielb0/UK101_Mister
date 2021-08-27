@@ -25,7 +25,7 @@ module Clock_divider_ascii(clock_in,clock_out
 input clock_in; // input clock on FPGA
 output clock_out; // output clock after dividing the input clock by divisor
 reg[27:0] counter=28'd0;
-parameter DIVISOR = 28'd2;
+parameter DIVISOR = 28'd4;
 // The frequency of the output clk_out
 //  = The frequency of the input clk_in divided by DIVISOR
 // For example: Fclk_in = 50Mhz, if you want to get 1Hz signal to blink LEDs
@@ -91,22 +91,22 @@ module ascii_input(
         begin
             // and sample the state of the PS/2 data line
             //if ((prev_ps2_clkdb == 1'b1) && (key_clk == 1'b0))
-            if ((prev_ps2_clkdb == 1'b1) && (new_clk == 1'b0))
-            begin
-              // check for negative edge of PS/2 clock
-              if (!ascii_rdy & data_ready& (text_byte<=ascii_last_byte))
-		        begin
-				     case(ascii_data[text_byte])
-					  8'h0A: ascii=8'h0D;
-					  default: ascii= ascii_data[text_byte];
-					  endcase
-                 
-            	  ascii_rdy   <= 1;
-                 $display("inside a %x text_byte %x ascii_last_byte %x",ascii,text_byte,ascii_last_byte);
-                 text_byte = text_byte + 16'b00000001;
-		        end
-            end
-            
+//            if ((prev_ps2_clkdb == 1'b1) && (new_clk == 1'b0))
+//            begin
+//              // check for negative edge of PS/2 clock
+//              if (!ascii_rdy & data_ready& (text_byte<=ascii_last_byte))
+//		        begin
+//				     case(ascii_data[text_byte])
+//					  8'h0A: ascii=8'h0D;
+//					  default: ascii= ascii_data[text_byte];
+//					  endcase
+//                 
+//            	  ascii_rdy   <= 1;
+//                 $display("inside a %x text_byte %x ascii_last_byte %x",ascii,text_byte,ascii_last_byte);
+//                 text_byte = text_byte + 16'b00000001;
+//		        end
+//            end
+//            
             // update previous clock state
             prev_ps2_clkdb <= new_clk;//ps2_clkdb;            
             //prev_ps2_clkdb <= key_clk;//ps2_clkdb;            

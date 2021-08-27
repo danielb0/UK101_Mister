@@ -169,7 +169,7 @@ wire [1:0] ar = status[9:8];
 assign VIDEO_ARX = 4;
 assign VIDEO_ARY = 3;
 
-assign LED_USER  = temp_data;
+assign LED_USER  = 1;
 
 
 `include "build_id.v"
@@ -287,7 +287,6 @@ uk101 uk101
 	.txd(UART_TXD),
 	.rts(UART_RTS),
 	.ps2_select(ps2_select),
-	.data_out(temp_data),
    .ioctl_download(ioctl_download && ioctl_index),
    .textinput_dout(ioctl_data),
    .textinput_addr(ioctl_addr[12:0]),
