@@ -57,7 +57,7 @@ architecture Behavioral of vga is
 -------------------------------------------------------------------
 --   SVGA Signal 800 x 600 @ 60 Hz timing - USE a 40MHz Pixel Clock
 -------------------------------------------------------------------
---Horizontal timing (line)
+----Horizontal timing (line)
 --constant h_Visible_area : integer:=800;
 --constant h_Front_porch  : integer:=40;
 --constant h_Sync_pulse   : integer:=128;
@@ -71,26 +71,26 @@ architecture Behavioral of vga is
 --constant v_Whole_frame  : integer:=628;
 ----Scaler Adjustment
 --constant scaler_width	: integer:=82;
---constant scaler_height	: integer:=55;
+--signal scaler_height	: integer:=55;
 
 ------------------------------------------------------------------------------------
 --   VGA Signal 640 x 480 @ 60 Hz Industry standard timing - USE a 25MHz Pixel Clock
 ------------------------------------------------------------------------------------
 --Horizontal timing (line)
-constant h_Visible_area : integer:=640;
-constant h_Front_porch  : integer:=16;
-constant h_Sync_pulse   : integer:=96;
-constant h_Back_porch   : integer:=48;
-constant h_Whole_line   : integer:=800;
---Vertical timing (frame)
-constant v_Visible_area : integer:=480;
-constant v_Front_porch  : integer:=10;
-constant v_Sync_pulse   : integer:=2;
-constant v_Back_porch   : integer:=33;
-constant v_Whole_frame  : integer:=525;
---Scaler Adjustment
-constant scaler_width	: integer:=102;
-signal scaler_height	: integer:=70;
+--constant h_Visible_area : integer:=640;
+--constant h_Front_porch  : integer:=16;
+--constant h_Sync_pulse   : integer:=96;
+--constant h_Back_porch   : integer:=48;
+--constant h_Whole_line   : integer:=800;
+----Vertical timing (frame)
+--constant v_Visible_area : integer:=480;
+--constant v_Front_porch  : integer:=10;
+--constant v_Sync_pulse   : integer:=2;
+--constant v_Back_porch   : integer:=33;
+--constant v_Whole_frame  : integer:=525;
+----Scaler Adjustment
+--constant scaler_width	: integer:=102;
+--signal scaler_height	: integer:=70;
 
 --------------------------------------------------------------------------------------
 --   640x480 - (Non Standard 512x480 stretched pixel timing) - USE a 25MHz Pixel Clock
@@ -115,20 +115,20 @@ signal scaler_height	: integer:=70;
 --   800x600 - (Non Standard 512x600 stretched pixel timing) - USE a 25MHz Pixel Clock
 --------------------------------------------------------------------------------------
 --Horizontal timing (line)
---constant h_Visible_area : integer:=512;
---constant h_Front_porch  : integer:=26;
---constant h_Sync_pulse   : integer:=82;
---constant h_Back_porch   : integer:=56;
---constant h_Whole_line   : integer:=676;
-----Vertical timing (frame)
---constant v_Visible_area : integer:=600;
---constant v_Front_porch  : integer:=1;
---constant v_Sync_pulse   : integer:=4;
---constant v_Back_porch   : integer:=23;
---constant v_Whole_frame  : integer:=628;
-----Scaler Adjustment
---constant scaler_width	: integer:=128;
---constant scaler_height	: integer:=55;
+constant h_Visible_area : integer:=512;
+constant h_Front_porch  : integer:=26;
+constant h_Sync_pulse   : integer:=82;
+constant h_Back_porch   : integer:=56;
+constant h_Whole_line   : integer:=676;
+--Vertical timing (frame)
+constant v_Visible_area : integer:=600;
+constant v_Front_porch  : integer:=1;
+constant v_Sync_pulse   : integer:=4;
+constant v_Back_porch   : integer:=23;
+constant v_Whole_frame  : integer:=628;
+--Scaler Adjustment
+constant scaler_width	: integer:=128;
+signal scaler_height	: integer:=55;
 
 
 --Calculate combined video timings as constants
@@ -175,9 +175,9 @@ signal hcount_d12,hcount_d13							: unsigned(10 downto 0):="00000000000";
 
 begin
 
-scaler_height <= 	70 when resolution = '0' else 
-						35 when resolution = '1' and monitor_type='0' else
-						35 when resolution = '1' and monitor_type='1';
+scaler_height <= 	55 when resolution = '0' else 
+						26 when resolution = '1' and monitor_type='0' else
+						26 when resolution = '1' and monitor_type='1';
 
 ---------------------------------------------------------
 --                                                     --
