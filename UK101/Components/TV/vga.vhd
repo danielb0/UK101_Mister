@@ -39,20 +39,20 @@ architecture Behavioral of vga is
 --   XGA Signal 1024 x 768 @ 60 Hz timing - USE a 65MHz Pixel Clock
 -------------------------------------------------------------------
 --Horizontal timing (line)
---constant h_Visible_area : integer:=1024;
---constant h_Front_porch  : integer:=24;
---constant h_Sync_pulse   : integer:=136;
---constant h_Back_porch   : integer:=160;
---constant h_Whole_line   : integer:=1344;
-----Vertical timing (frame)
---constant v_Visible_area : integer:=768;
---constant v_Front_porch  : integer:=3;
---constant v_Sync_pulse   : integer:=6;
---constant v_Back_porch   : integer:=29;
---constant v_Whole_frame  : integer:=806;
-------Scaler Adjustment
---constant scaler_width	: integer:=64;
---constant scaler_height	: integer:=43;
+constant h_Visible_area : integer:=1024;
+constant h_Front_porch  : integer:=24;
+constant h_Sync_pulse   : integer:=136;
+constant h_Back_porch   : integer:=160;
+constant h_Whole_line   : integer:=1344;
+--Vertical timing (frame)
+constant v_Visible_area : integer:=768;
+constant v_Front_porch  : integer:=3;
+constant v_Sync_pulse   : integer:=6;
+constant v_Back_porch   : integer:=29;
+constant v_Whole_frame  : integer:=806;
+----Scaler Adjustment
+constant scaler_width	: integer:=64;
+signal scaler_height	: integer:=43;
 
 -------------------------------------------------------------------
 --   SVGA Signal 800 x 600 @ 60 Hz timing - USE a 40MHz Pixel Clock
@@ -114,21 +114,21 @@ architecture Behavioral of vga is
 --------------------------------------------------------------------------------------
 --   800x600 - (Non Standard 512x600 stretched pixel timing) - USE a 25MHz Pixel Clock
 --------------------------------------------------------------------------------------
---Horizontal timing (line)
-constant h_Visible_area : integer:=512;
-constant h_Front_porch  : integer:=26;
-constant h_Sync_pulse   : integer:=82;
-constant h_Back_porch   : integer:=56;
-constant h_Whole_line   : integer:=676;
---Vertical timing (frame)
-constant v_Visible_area : integer:=600;
-constant v_Front_porch  : integer:=1;
-constant v_Sync_pulse   : integer:=4;
-constant v_Back_porch   : integer:=23;
-constant v_Whole_frame  : integer:=628;
---Scaler Adjustment
-constant scaler_width	: integer:=128;
-signal scaler_height	: integer:=55;
+----Horizontal timing (line)
+--constant h_Visible_area : integer:=512;
+--constant h_Front_porch  : integer:=26;
+--constant h_Sync_pulse   : integer:=82;
+--constant h_Back_porch   : integer:=56;
+--constant h_Whole_line   : integer:=676;
+----Vertical timing (frame)
+--constant v_Visible_area : integer:=600;
+--constant v_Front_porch  : integer:=1;
+--constant v_Sync_pulse   : integer:=4;
+--constant v_Back_porch   : integer:=23;
+--constant v_Whole_frame  : integer:=628;
+----Scaler Adjustment
+--constant scaler_width	: integer:=128;
+--signal scaler_height	: integer:=55;
 
 
 --Calculate combined video timings as constants
@@ -175,9 +175,9 @@ signal hcount_d12,hcount_d13							: unsigned(10 downto 0):="00000000000";
 
 begin
 
-scaler_height <= 	55 when resolution = '0' else 
-						26 when resolution = '1' and monitor_type='0' else
-						26 when resolution = '1' and monitor_type='1';
+scaler_height <= 	43 when resolution = '0' else 
+						22 when resolution = '1' and monitor_type='0' else
+						22 when resolution = '1' and monitor_type='1';
 
 ---------------------------------------------------------
 --                                                     --
@@ -451,9 +451,9 @@ END PROCESS;
    videoon				<= videoh and videov;
 	VGA					<= Pixel_Colour;
    --Vout(17 downto 2)	<= VGA and videoon&videoon&videoon&videoon&videoon&videoon&videoon&videoon&videoon&videoon&videoon&videoon&videoon&videoon&videoon&videoon;
-	r	<= VGA(15) or VGA(14) or VGA(13) or VGA(12) or VGA(11);
-	g 	<= VGA(10) or VGA(9) or VGA(8) or VGA(7) or VGA(6) or VGA(5);
-	b	<= VGA(4) or VGA(3) or VGA(2) or VGA(1) or VGA(0);
+	r	<= (VGA(15) or VGA(14) or VGA(13) or VGA(12) or VGA(11)) and videoon;
+	g 	<= (VGA(10) or VGA(9) or VGA(8) or VGA(7) or VGA(6) or VGA(5)) and videoon;
+	b	<= (VGA(4) or VGA(3) or VGA(2) or VGA(1) or VGA(0)) and videoon;
 	hsync_out	<= hsync;
 	vsync_out	<= vsync;
 	hblank <= not videoh;
