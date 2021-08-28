@@ -33,6 +33,7 @@ entity uk101 is
 		r				:	out std_logic;
 		g				:	out std_logic;
 		b				:	out std_logic;
+		de				:	out std_logic;
 		resolution	:	in std_logic;
 		colours		:	in std_logic_vector(1 downto 0);
 		monitor_type : in std_logic;
@@ -138,7 +139,7 @@ begin
 	n_dispRamCS <= '0' when cpuAddress(15 downto 11) = "11010" else '1';
 	n_basRomCS <= '0' when cpuAddress(15 downto 13) = "101" else '1'; --8k
 	n_monitorRomCS <= '0' when cpuAddress(15 downto 11) = "11111" else '1'; --2K
-	n_ramCS <= '0' when cpuAddress(15) = '0' else '1';
+	n_ramCS <= not(n_dispRamCS and n_basRomCS and n_monitorRomCS and n_aciaCS and n_kbCS);
 	n_aciaCS <= '0' when cpuAddress(15 downto 1) = "111100000000000" else '1';
 	n_kbCS <= '0' when cpuAddress(15 downto 10) = "110111" else '1';
 	
@@ -219,7 +220,7 @@ begin
 	u3: entity work.ProgRam 
 	port map
 	(
-		address => cpuAddress(14 downto 0),
+		address => cpuAddress(15 downto 0),
 		clock => clk,
 		data => cpuDataOut,
 		wren => not(n_memWR or n_ramCS),
@@ -317,8 +318,8 @@ begin
 		r => r,
 		g => g,
 		b => b,
-		hblank => hblank,
-		vblank => vblank
+		de => de
+
 	);
 
 	u7: entity work.CharRom

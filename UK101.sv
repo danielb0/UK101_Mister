@@ -262,6 +262,12 @@ wire r, g, b;
 wire vs,hs,de;
 wire hblank, vblank;
 wire temp_data;
+assign VGA_R = {8{r}};
+assign VGA_G = {8{g}};
+assign VGA_B = {8{b}};
+//	.G({8{g}}),
+//	.B({8{b}}),
+//	.HSync(hs),
 
 uk101 uk101
 (
@@ -270,14 +276,13 @@ uk101 uk101
 	.video_clock(CLK_VIDEO),
 	.ps2Clk(PS2_CLK),
 	.ps2Data(PS2_DAT),
-	.hsync(hs),
-	.vsync(vs),	
-	.hblank(hblank),
-	.vblank(vblank),
+	.hsync(VGA_HS),
+	.vsync(VGA_VS),	
 	//.de(de),	
 	.r(r),			
 	.g(g),
-	.b(b),
+	.b(b),	
+	.de(VGA_DE),
 	.colours(colour_scheme),
 	.resolution(resolution),
 	.monitor_type(monitor_type),
@@ -293,26 +298,26 @@ uk101 uk101
 );
 
 
-video_cleaner video_cleaner
-(
-	.clk_vid(CLK_VIDEO),
-	.ce_pix(CE_PIXEL),
-
-	.R({8{r}}),
-	.G({8{g}}),
-	.B({8{b}}),
-	.HSync(hs),
-	.VSync(vs),
-	.HBlank(hblank),
-	.VBlank(vblank),
-
-	.VGA_R(VGA_R),
-	.VGA_G(VGA_G),
-	.VGA_B(VGA_B),
-	.VGA_VS(VGA_VS),
-	.VGA_HS(VGA_HS),
-	.VGA_DE(VGA_DE)
-);
+//video_cleaner video_cleaner
+//(
+//	.clk_vid(CLK_VIDEO),
+//	.ce_pix(CE_PIXEL),
+//
+//	.R({8{r}}),
+//	.G({8{g}}),
+//	.B({8{b}}),
+//	.HSync(hs),
+//	.VSync(vs),
+//	.HBlank(hblank),
+//	.VBlank(vblank),
+//
+//	.VGA_R(VGA_R),
+//	.VGA_G(VGA_G),
+//	.VGA_B(VGA_B),
+//	.VGA_VS(VGA_VS),
+//	.VGA_HS(VGA_HS),
+//	.VGA_DE(VGA_DE)
+//);
 
 
 endmodule
