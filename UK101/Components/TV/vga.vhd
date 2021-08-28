@@ -21,14 +21,13 @@ entity vga is
 		--Vout:      out unsigned(17 downto 0) -- rrrrr,gggggg,bbbbb,hsync,vsync
 		hsync_out			:	out std_logic;
 		vsync_out			:	out std_logic;
-		hblank		:	out std_logic;
-		vblank		:	out std_logic;
 		colours		:	in std_logic_vector(1 downto 0);
 		resolution	: in std_logic;
 		monitor_type	: in std_logic;
 		r				:	out std_logic;
 		g				:	out std_logic;
-		b				:	out std_logic
+		b				:	out std_logic;
+		de				:	out std_logic
 		
 	);
 end vga;
@@ -172,10 +171,12 @@ signal hcount_d1,hcount_d2,hcount_d3,hcount_d4	: unsigned(10 downto 0):="0000000
 signal hcount_d5,hcount_d6,hcount_d7,hcount_d8	: unsigned(10 downto 0):="00000000000";
 signal hcount_d9,hcount_d10,hcount_d11				: unsigned(10 downto 0):="00000000000";
 signal hcount_d12,hcount_d13							: unsigned(10 downto 0):="00000000000";
+signal hblank		:	std_logic;
+signal vblank		:	std_logic;
 
 begin
 
-scaler_height <= 	43 when resolution = '0' else 
+scaler_height <= 	45 when resolution = '0' else 
 						22 when resolution = '1' and monitor_type='0' else
 						22 when resolution = '1' and monitor_type='1';
 
@@ -270,8 +271,8 @@ begin
 			IF vcount = 0 THEN
 				X0vp1 <= "0000000000000000";
 				Y0vp1 <= "0000000000000000";
-				X1vp1 <= "0000000000000000";-- - 0260; -- Move screen right by 260 'micro-units'
-				Y1vp1 <= "0000000000000000";-- - 0250; -- Move screen down by 250 'micro-units'
+				X1vp1 <= "0000000000000000" - 0260; -- Move screen right by 260 'micro-units'
+				Y1vp1 <= "0000000000000000" - 0250; -- Move screen down by 250 'micro-units'
 			ELSIF hcount = 0 THEN
 				X0vp1 <= X1vp1 - 0;
 				Y0vp1 <= Y1vp1 + scaler_height;
@@ -458,5 +459,6 @@ END PROCESS;
 	vsync_out	<= vsync;
 	hblank <= not videoh;
 	vblank <= not videov;
+	de <= not(hblank or vblank);
 
 end Behavioral;
