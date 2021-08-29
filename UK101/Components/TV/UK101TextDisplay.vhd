@@ -23,11 +23,18 @@ entity UK101TextDisplay is
 	port (
 		charAddr : out std_LOGIC_VECTOR(10 downto 0);
 		charData : in std_LOGIC_VECTOR(7 downto 0);
-		dispAddr : out std_LOGIC_VECTOR(10 downto 0);
+		dispAddr : out std_LOGIC_VECTOR(9 downto 0);
 		dispData : in std_LOGIC_VECTOR(7 downto 0);
 		clk    	: in  std_logic;
-		video		: out std_logic;
-		sync  	: out  std_logic
+		r		: out std_logic;
+		g		: out std_logic;
+		b		: out std_logic;
+		sync  	: out  std_logic;
+		hsync_out  	: out  std_logic;
+		vsync_out  	: out  std_logic;
+		hblank_out  	: out  std_logic;
+		vblank_out 	: out  std_logic;
+		de 	: out  std_logic
    );
 end UK101TextDisplay;
 
@@ -35,6 +42,11 @@ architecture rtl of UK101TextDisplay is
 
 	signal hSync   : std_logic := '1';
 	signal vSync   : std_logic := '1';
+	
+	signal hblank   : std_logic;
+	signal vblank   : std_logic;
+	
+	signal video   : std_logic;
 
 	signal vActive   : std_logic := '0';
 	signal hActive   : std_logic := '0';
@@ -45,18 +57,28 @@ architecture rtl of UK101TextDisplay is
 	signal	horizCount: STD_LOGIC_VECTOR(11 DOWNTO 0); 
 	signal	vertLineCount: STD_LOGIC_VECTOR(8 DOWNTO 0); 
 
-	signal	charVert: STD_LOGIC_VECTOR(4 DOWNTO 0); 
-	signal	charScanLine: STD_LOGIC_VECTOR(2 DOWNTO 0); 
+	signal	charVert: STD_LOGIC_VECTOR(3 DOWNTO 0); 
+	signal	charScanLine: STD_LOGIC_VECTOR(3 DOWNTO 0); 
 
 	signal	charHoriz: STD_LOGIC_VECTOR(5 DOWNTO 0); 
 	signal	charBit: STD_LOGIC_VECTOR(3 DOWNTO 0); 
 
 begin
 
+	hsync_out <= hsync;
+	vsync_out <= vsync;
+	hblank<= not hActive;
+	vblank<= not vActive;
+	hblank_out <= hblank;
+	vblank_out <= vblank;
+	de <= not(hblank or vblank);
+	r <= video;
+	g <= video;
+	b <= video;
 	sync <= hSync and vSync;
 	
 	dispAddr <= charVert & charHoriz;
-	charAddr <= dispData & charScanLine;
+	charAddr <= dispData & charScanLine(3 DOWNTO 1);
 	
 	PROCESS (clk)
 	BEGIN
@@ -72,7 +94,7 @@ begin
 -- 64uS per horiz line (3200 clocks)
 -- 4.7us horiz sync (235 clocks)
 		if rising_edge(clk) then
-			if (horizCount < 780) or (horizCount > 2830) then
+			IF horizCount < 3200 THEN
 				horizCount <= horizCount + 1;
 --				if (horizCount < 600) or (horizCount > 3000) then
 				if (horizCount < 40) or (horizCount > 3000) then
@@ -97,7 +119,7 @@ begin
 						charScanLine <= (others => '0');
 					else
 						vActive <= '1';
-						if charScanLine = 7 then
+						if charScanLine = 15 then
 							charScanLine <= (others => '0');
 							charVert <= charVert+1;
 						else
@@ -123,7 +145,7 @@ begin
 			end if;
 			
 			if hActive='1' and vActive = '1' then
-				if pixelClockCount <3 then
+				if pixelClockCount <5 then
 					pixelClockCount <= pixelClockCount+1;
 				else
 					video <= charData(7-to_integer(unsigned(pixelCount)));

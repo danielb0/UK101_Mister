@@ -294,6 +294,7 @@ wire [1:0] ar = status[9:8];
 video_freak video_freak
 (
 	.*,
+	.CLK_VIDEO(CLK_VIDEO),
 	.VGA_DE_IN(VGA_DE),
 	.VGA_DE(),
 
@@ -332,7 +333,7 @@ video_cleaner video_cleaner
 );
 
 
-video_mixer #(.LINE_LENGTH(1024), .HALF_DEPTH(1), .GAMMA(0)) video_mixer
+video_mixer #(.LINE_LENGTH(384), .HALF_DEPTH(1), .GAMMA(0)) video_mixer
 (
 	.*,
 	.CLK_VIDEO(CLK_VIDEO),
