@@ -147,8 +147,8 @@ assign {SD_SCK, SD_MOSI, SD_CS} = 'Z;
 assign {SDRAM_DQ, SDRAM_A, SDRAM_BA, SDRAM_CLK, SDRAM_CKE, SDRAM_DQML, SDRAM_DQMH, SDRAM_nWE, SDRAM_nCAS, SDRAM_nRAS, SDRAM_nCS} = 'Z;
 assign {DDRAM_CLK, DDRAM_BURSTCNT, DDRAM_ADDR, DDRAM_DIN, DDRAM_BE, DDRAM_RD, DDRAM_WE} = '0;  
 
-assign VGA_SL = 0;
-assign VGA_F1 = 0;
+//assign VGA_SL = 0;
+//assign VGA_F1 = 0;
 assign VGA_SCALER = 0;
 assign HDMI_FREEZE = 0;
 
@@ -177,6 +177,7 @@ localparam CONF_STR = {
 	"UK101;;",
 	"-;",
 	"O89,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
+	"OCD,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%;",
 	"O34,Colours,White on blue,White on black,Green on black,Yellow on black;",
 	"D0O55,Screen size,64x32,48x16;",
 	"O66,Monitor,Cegmon,MonUK02(NewMon);",
@@ -202,6 +203,7 @@ wire monitor_type=status[6];
 wire baud_rate=status[7];
 assign resolution = monitor_type ? 1 : status[5];
 wire forced_scandoubler;
+wire [21:0] gamma_bus;
 
 
 
@@ -214,7 +216,8 @@ hps_io #(.CONF_STR(CONF_STR),.PS2DIV(2000)) hps_io
 	.ps2_kbd_clk_out(PS2_CLK),
 	.ps2_kbd_data_out(PS2_DAT),
 	.forced_scandoubler(forced_scandoubler),
-	.status_menumask({status[6]})
+	.status_menumask({status[6]}),
+	.gamma_bus(gamma_bus),
 
 
 );
@@ -237,18 +240,27 @@ pll pll
 wire reset = RESET | status[0] | buttons[1] | status[10] ;
 
 //assign CLK_VIDEO = clk_sys;
-assign CE_PIXEL = 1;
+
 
 ///////////////////////////////////////////////////
 wire r, g, b;
 wire vs,hs,de;
+wire hsync, vsync;
 wire hblank, vblank;
-assign VGA_R = {8{r}};
-assign VGA_G = {8{g}};
-assign VGA_B = {8{b}};
+wire CE_PIX;
+wire freeze_sync;
+assign CE_PIX = 1;
+//assign VGA_R = {8{r}};
+//assign VGA_G = {8{g}};
+//assign VGA_B = {8{b}};
 //	.G({8{g}}),
 //	.B({8{b}}),
 //	.HSync(hs),
+
+
+wire [1:0] scale = status[13:12];
+assign VGA_SL = scale ? scale - 1'd1 : 2'd0;
+assign VGA_F1 = 0;
 
 uk101 uk101
 (
@@ -257,13 +269,15 @@ uk101 uk101
 	.video_clock(CLK_VIDEO),
 	.ps2Clk(PS2_CLK),
 	.ps2Data(PS2_DAT),
-	.hsync(VGA_HS),
-	.vsync(VGA_VS),	
+	.hsync(hs),
+	.vsync(vs),	
 	//.de(de),	
 	.r(r),			
 	.g(g),
 	.b(b),	
-	.de(VGA_DE),
+	.hblank(hblank),
+	.vblank(vblank),
+	.de(de),
 	.colours(colour_scheme),
 	.resolution(resolution),
 	.monitor_type(monitor_type),
@@ -273,26 +287,59 @@ uk101 uk101
 	.rts(UART_RTS)
 );
 
-//video_cleaner video_cleaner
-//(
-//	.clk_vid(CLK_VIDEO),
-//	.ce_pix(CE_PIXEL),
-//
-//	.R({8{r}}),
-//	.G({8{g}}),
-//	.B({8{b}}),
-//	.HSync(hs),
-//	.VSync(vs),
-//	.HBlank(hblank),
-//	.VBlank(vblank),
-//
+wire[7:0] red;
+wire[7:0] green;
+wire[7:0] blue;
+
+video_cleaner video_cleaner
+(
+	.clk_vid(CLK_VIDEO),
+	.ce_pix(CE_PIXEL),
+
+	.R({8{r}}),
+	.G({8{g}}),
+	.B({8{b}}),
+	.HSync(hs),
+	.VSync(vs),
+	.HBlank(hblank),
+	.VBlank(vblank),
+
+	.VGA_R(red),
+	.VGA_G(green),
+	.VGA_B(blue),
+	.VGA_VS(vsync),
+	.VGA_HS(hsync),
+	.VGA_DE(de)
+);
+
+
+video_mixer #(1024,0,0) video_mixer
+(
+	.*,
+	.CLK_VIDEO(CLK_VIDEO),
+	.ce_pix(CE_PIX),
+	.scandoubler(scale || forced_scandoubler),
+	.hq2x(scale == 1),
+
+	.R(red),
+	.G(green),
+	.B(blue),
+	.HSync(hsync),
+	.VSync(vsync),
+	//.gamma_bus(gamma_bus),
+
+	.HBlank(hblank),
+	.VBlank(vblank),
+//	//outs
 //	.VGA_R(VGA_R),
 //	.VGA_G(VGA_G),
 //	.VGA_B(VGA_B),
+//
 //	.VGA_VS(VGA_VS),
 //	.VGA_HS(VGA_HS),
 //	.VGA_DE(VGA_DE)
-//);
+);
+
 
 
 endmodule

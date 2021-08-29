@@ -238,6 +238,8 @@ begin
 		VIDEO_CLK => video_clock,
 		hsync_out => hsync,
 		vsync_out => vsync,
+		hblank_out => hblank,
+		vblank_out => vblank,
 		colours => colours,
 		resolution => resolution,
 		monitor_type => monitor_type,
