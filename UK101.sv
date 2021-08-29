@@ -38,9 +38,9 @@ module emu
 	output        CE_PIXEL,
 
 	//Video aspect ratio for HDMI. Most retro systems have ratio 4:3.
-	//if VIDEO_ARX[12] or VIDEO_ARY[12] is set then [11:0] contains scaled size instead of aspect ratio.
-	output [7:0] VIDEO_ARX,
-	output [7:0] VIDEO_ARY,
+	//if VIDEO_[12] or VIDEO_ARY[12] is set then [11:0] contains scaled size instead of aspect ratio.
+	output [12:0] VIDEO_ARX,
+	output [12:0] VIDEO_ARY,
 
 	output  [7:0] VGA_R,
 	output  [7:0] VGA_G,
@@ -164,10 +164,6 @@ assign BUTTONS = 0;
 //////////////////////////////////////////////////////////////////
 
 
-wire [1:0] ar = status[9:8];
-
-assign VIDEO_ARX = 4;
-assign VIDEO_ARY = 3;
 
 assign LED_USER  = 1;
 
@@ -177,7 +173,8 @@ localparam CONF_STR = {
 	"UK101;;",
 	"-;",
 	"O89,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
-	"OCD,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%;",
+	"OCE,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%;",
+	"OFG,Scale,Normal,V-Integer,Narrower HV-Integer,Wider HV-Integer;",
 	"O34,Colours,White on blue,White on black,Green on black,Yellow on black;",
 	"D0O55,Screen size,64x32,48x16;",
 	"O66,Monitor,Cegmon,MonUK02(NewMon);",
@@ -258,8 +255,9 @@ assign CE_PIX = 1;
 //	.HSync(hs),
 
 
-wire [1:0] scale = status[13:12];
-assign VGA_SL = scale ? scale - 1'd1 : 2'd0;
+wire [1:0] scale = status[14:12];
+wire [2:0] sl = scale ? scale - 1'd1 : 3'd0;
+assign VGA_SL=sl[1:0];
 assign VGA_F1 = 0;
 
 uk101 uk101
@@ -287,6 +285,27 @@ uk101 uk101
 	.rts(UART_RTS)
 );
 
+
+wire [1:0] ar = status[9:8];
+
+//assign VIDEO_ARX = 4;
+//assign VIDEO_ARY = 3;
+
+video_freak video_freak
+(
+	.*,
+	.VGA_DE_IN(VGA_DE),
+	.VGA_DE(),
+
+	.ARX((!ar) ? 12'd4 : (ar - 1'd1)),
+	.ARY((!ar) ? 12'd3 : 12'd0),
+	.CROP_SIZE(0),
+	.CROP_OFF(0),
+	.SCALE(status[16:15])
+);
+
+
+
 wire[7:0] red;
 wire[7:0] green;
 wire[7:0] blue;
@@ -313,7 +332,7 @@ video_cleaner video_cleaner
 );
 
 
-video_mixer #(1024,0,0) video_mixer
+video_mixer #(.LINE_LENGTH(1024), .HALF_DEPTH(1), .GAMMA(0)) video_mixer
 (
 	.*,
 	.CLK_VIDEO(CLK_VIDEO),
@@ -321,9 +340,9 @@ video_mixer #(1024,0,0) video_mixer
 	.scandoubler(scale || forced_scandoubler),
 	.hq2x(scale == 1),
 
-	.R(red),
-	.G(green),
-	.B(blue),
+	.R(red[3:0]),
+	.G(green[3:0]),
+	.B(blue[3:0]),
 	.HSync(hsync),
 	.VSync(vsync),
 	//.gamma_bus(gamma_bus),
