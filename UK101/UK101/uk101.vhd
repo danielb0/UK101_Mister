@@ -34,8 +34,8 @@ entity uk101 is
 		g				:	out std_logic;
 		b				:	out std_logic;
 		de				:	out std_logic;
-		resolution	:	in std_logic;
-		colours		:	in std_logic_vector(1 downto 0);
+		--resolution	:	in std_logic;
+		--colours		:	in std_logic_vector(1 downto 0);
 		monitor_type : in std_logic;
 		baud_rate : in std_logic;
 		hblank		:	out std_logic;

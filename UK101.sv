@@ -175,8 +175,8 @@ localparam CONF_STR = {
 	"O89,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
 	"OCD,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%;",
 	"OFG,Scale,Normal,V-Integer,Narrower HV-Integer,Wider HV-Integer;",
-	"O34,Colours,White on blue,White on black,Green on black,Yellow on black;",
-	"D0O55,Screen size,64x32,48x16;",
+	//"O34,Colours,White on blue,White on black,Green on black,Yellow on black;",
+	//"D0O55,Screen size,64x32,48x16;",
 	"O66,Monitor,Cegmon,MonUK02(NewMon);",
 	"O77,Baud Rate,9600,300;",
 	"RA,Reset;",
@@ -194,11 +194,11 @@ wire  [1:0] buttons;
 wire [31:0] status;
 wire PS2_CLK;
 wire PS2_DAT;
-wire [1:0] colour_scheme = status[4:3];
-wire resolution;
+//wire [1:0] colour_scheme = status[4:3];
+//wire resolution;
 wire monitor_type=status[6];
 wire baud_rate=status[7];
-assign resolution = monitor_type ? 1 : status[5];
+//assign resolution = monitor_type ? 1 : status[5];
 wire forced_scandoubler;
 wire [21:0] gamma_bus;
 
@@ -292,8 +292,8 @@ uk101 uk101
 	.hblank(hblank),
 	.vblank(vblank),
 	.de(de),
-	.colours(colour_scheme),
-	.resolution(resolution),
+	//.colours(colour_scheme),
+	//.resolution(resolution),
 	.monitor_type(monitor_type),
 	.baud_rate(baud_rate),
 	.rxd(UART_RXD),
@@ -349,7 +349,7 @@ video_cleaner video_cleaner
 );
 
 
-video_mixer #(.LINE_LENGTH(494), .HALF_DEPTH(1), .GAMMA(0)) video_mixer
+video_mixer #(.LINE_LENGTH(494), .HALF_DEPTH(0), .GAMMA(0)) video_mixer
 (
 	.*,
 	.CLK_VIDEO(CLK_VIDEO),
@@ -357,9 +357,9 @@ video_mixer #(.LINE_LENGTH(494), .HALF_DEPTH(1), .GAMMA(0)) video_mixer
 	.scandoubler(scale || forced_scandoubler),
 	.hq2x(scale == 1),
 
-	.R(red[3:0]),
-	.G(green[3:0]),
-	.B(blue[3:0]),
+	.R(red),
+	.G(green),
+	.B(blue),
 	.HSync(hsync),
 	.VSync(vsync),
 	//.gamma_bus(gamma_bus),
