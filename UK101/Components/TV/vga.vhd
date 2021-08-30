@@ -21,6 +21,8 @@ entity vga is
 		--Vout:      out unsigned(17 downto 0) -- rrrrr,gggggg,bbbbb,hsync,vsync
 		hsync_out			:	out std_logic;
 		vsync_out			:	out std_logic;
+		hblank_out				:	out std_logic;
+		vblank_out				:	out std_logic;
 		colours		:	in std_logic_vector(1 downto 0);
 		resolution	: in std_logic;
 		monitor_type	: in std_logic;
@@ -459,6 +461,8 @@ END PROCESS;
 	vsync_out	<= vsync;
 	hblank <= not videoh;
 	vblank <= not videov;
+	hblank_out<=hblank;
+	vblank_out<=vblank;
 	de <= not(hblank or vblank);
 
 end Behavioral;
