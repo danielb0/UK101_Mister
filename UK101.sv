@@ -173,7 +173,7 @@ localparam CONF_STR = {
 	"UK101;;",
 	"-;",
 	"O89,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
-	"OCE,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%;",
+	"OCD,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%;",
 	"OFG,Scale,Normal,V-Integer,Narrower HV-Integer,Wider HV-Integer;",
 	"O34,Colours,White on blue,White on black,Green on black,Yellow on black;",
 	"D0O55,Screen size,64x32,48x16;",
@@ -246,7 +246,23 @@ wire hsync, vsync;
 wire hblank, vblank;
 wire CE_PIX;
 wire freeze_sync;
-assign CE_PIX = 1;
+//assign CE_PIX = 1;
+reg [2:0] count = 0;
+
+always @(negedge clk_sys) begin
+	if (count == 5)
+	begin
+		count <= 0;
+		CE_PIX <= 1'b1;
+		end
+	else	
+		begin
+		count <= count + 1;
+		CE_PIX <= 1'b0;
+		end
+end
+		
+
 //assign VGA_R = {8{r}};
 //assign VGA_G = {8{g}};
 //assign VGA_B = {8{b}};
@@ -255,9 +271,9 @@ assign CE_PIX = 1;
 //	.HSync(hs),
 
 
-wire [1:0] scale = status[14:12];
-wire [2:0] sl = scale ? scale - 1'd1 : 3'd0;
-assign VGA_SL=sl[1:0];
+wire [1:0] scale = status[13:12];
+assign VGA_SL = scale ? scale - 1'd1 : 2'd0;
+//assign VGA_SL=sl[1:0];
 assign VGA_F1 = 0;
 
 uk101 uk101
@@ -294,6 +310,7 @@ wire [1:0] ar = status[9:8];
 video_freak video_freak
 (
 	.*,
+	.CE_PIXEL(CE_PIX),
 	.CLK_VIDEO(CLK_VIDEO),
 	.VGA_DE_IN(VGA_DE),
 	.VGA_DE(),
@@ -314,8 +331,7 @@ wire[7:0] blue;
 video_cleaner video_cleaner
 (
 	.clk_vid(CLK_VIDEO),
-	.ce_pix(CE_PIXEL),
-
+	.ce_pix(CE_PIX),
 	.R({8{r}}),
 	.G({8{g}}),
 	.B({8{b}}),
@@ -333,7 +349,7 @@ video_cleaner video_cleaner
 );
 
 
-video_mixer #(.LINE_LENGTH(384), .HALF_DEPTH(1), .GAMMA(0)) video_mixer
+video_mixer #(.LINE_LENGTH(494), .HALF_DEPTH(1), .GAMMA(0)) video_mixer
 (
 	.*,
 	.CLK_VIDEO(CLK_VIDEO),

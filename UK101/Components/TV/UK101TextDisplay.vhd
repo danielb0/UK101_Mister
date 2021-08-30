@@ -65,8 +65,8 @@ architecture rtl of UK101TextDisplay is
 
 begin
 
-	hsync_out <= hsync;
-	vsync_out <= vsync;
+	hsync_out <= not hsync;
+	vsync_out <= not vsync;
 	hblank<= not hActive;
 	vblank<= not vActive;
 	hblank_out <= hblank;
