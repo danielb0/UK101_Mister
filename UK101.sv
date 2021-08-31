@@ -223,20 +223,21 @@ hps_io #(.CONF_STR(CONF_STR),.PS2DIV(2000)) hps_io
 ///////////////////////////////////////////////////
 wire clk_sys, locked;
 wire clk_VIDEO;
+wire pll_clk_video;
 
 pll pll
 (
 	.refclk(CLK_50M),
 	.rst(0),
 	.outclk_0(clk_sys), // 50M
-	.outclk_1(CLK_VIDEO),
+	.outclk_1(pll_clk_video),
 	.locked(locked)
 );
 
 ///////////////////////////////////////////////////
 wire reset = RESET | status[0] | buttons[1] | status[10] ;
 
-//assign CLK_VIDEO = clk_sys;
+assign CLK_VIDEO = clk_sys;
 
 
 ///////////////////////////////////////////////////
