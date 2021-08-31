@@ -249,7 +249,7 @@ wire freeze_sync;
 //assign CE_PIX = 1;
 reg [2:0] count = 0;
 
-always @(negedge clk_sys) begin
+always @(posedge clk_sys) begin
 	if (count == 5)
 	begin
 		count <= 0;
@@ -349,7 +349,7 @@ video_cleaner video_cleaner
 );
 
 
-video_mixer #(.LINE_LENGTH(494), .HALF_DEPTH(0), .GAMMA(0)) video_mixer
+video_mixer #(.LINE_LENGTH(493), .HALF_DEPTH(0), .GAMMA(0)) video_mixer
 (
 	.*,
 	.CLK_VIDEO(CLK_VIDEO),
