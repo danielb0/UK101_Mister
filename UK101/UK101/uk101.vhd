@@ -22,7 +22,8 @@ entity uk101 is
 	port(
 		n_reset		: in std_logic;
 		clk			: in std_logic;
-		video_clock	: in std_logic; 	
+		video_clock	: in std_logic; 
+		ce_pix	: in std_logic; 	
 		rxd			: in std_logic;
 		txd			: out std_logic;
 		rts			: out std_logic;
@@ -236,6 +237,7 @@ begin
 		dispAddr => dispAddrB,
 		dispData => dispRamDataOutB,
 		clk => video_clock,
+		ce_pix => ce_pix,
 		hsync_out => hsync,
 		vsync_out => vsync,
 		hblank_out => hblank,

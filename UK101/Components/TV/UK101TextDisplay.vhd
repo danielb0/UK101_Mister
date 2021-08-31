@@ -26,6 +26,7 @@ entity UK101TextDisplay is
 		dispAddr : out std_LOGIC_VECTOR(9 downto 0);
 		dispData : in std_LOGIC_VECTOR(7 downto 0);
 		clk    	: in  std_logic;
+		ce_pix	: in std_logic; 	
 		r		: out std_logic;
 		g		: out std_logic;
 		b		: out std_logic;
@@ -145,11 +146,8 @@ begin
 			end if;
 			
 			if hActive='1' and vActive = '1' then
-				if pixelClockCount <5 then
-					pixelClockCount <= pixelClockCount+1;
-				else
+				if ce_pix = '1' then
 					video <= charData(7-to_integer(unsigned(pixelCount)));
-					pixelClockCount <= (others => '0');
 					if pixelCount = 7 then
 						charHoriz <= charHoriz+1;
 					end if;

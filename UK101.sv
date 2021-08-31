@@ -286,6 +286,7 @@ uk101 uk101
 	.ps2Data(PS2_DAT),
 	.hsync(hs),
 	.vsync(vs),	
+	.ce_pix(CE_PIX),
 	//.de(de),	
 	.r(r),			
 	.g(g),
