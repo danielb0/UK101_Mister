@@ -52,7 +52,6 @@ architecture rtl of UK101TextDisplay is
 	signal vActive   : std_logic := '0';
 	signal hActive   : std_logic := '0';
 
-	signal	pixelClockCount: STD_LOGIC_VECTOR(3 DOWNTO 0); 
 	signal	pixelCount: STD_LOGIC_VECTOR(2 DOWNTO 0); 
 	
 	signal	horizCount: STD_LOGIC_VECTOR(11 DOWNTO 0); 
@@ -100,7 +99,6 @@ begin
 --				if (horizCount < 600) or (horizCount > 3000) then
 				if (horizCount < 40) or (horizCount > 3000) then
 					hActive <= '0';
-					pixelClockCount <= (others => '0');
 					charHoriz <= (others => '0');
 				else
 					hActive <= '1';
