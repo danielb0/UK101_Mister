@@ -110,7 +110,7 @@ begin
 					vertLineCount <= (others => '0');
 				else
 --					if vertLineCount < 42 or vertLineCount > 297 then
-					if vertLineCount < 38 or vertLineCount > 293 then
+					if vertLineCount < 37 or vertLineCount > 292 then
 						vActive <= '0';
 						charVert <= (others => '0');
 						charScanLine <= (others => '0');
