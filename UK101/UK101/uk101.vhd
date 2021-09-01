@@ -34,7 +34,6 @@ entity uk101 is
 		r				:	out std_logic;
 		g				:	out std_logic;
 		b				:	out std_logic;
-		de				:	out std_logic;
 		--resolution	:	in std_logic;
 		--colours		:	in std_logic_vector(1 downto 0);
 		monitor_type : in std_logic;
@@ -247,9 +246,7 @@ begin
 		--monitor_type => monitor_type,
 		r => r,
 		g => g,
-		b => b,
-		de => de
-
+		b => b
 	);
 
 	u7: entity work.CharRom

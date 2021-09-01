@@ -241,7 +241,7 @@ assign CLK_VIDEO = clk_sys;
 
 ///////////////////////////////////////////////////
 wire r, g, b;
-wire vs,hs,de;
+wire vs,hs;
 wire hsync, vsync;
 wire hblank, vblank;
 wire CE_PIX;
@@ -291,7 +291,7 @@ uk101 uk101
 	.b(b),	
 	.hblank(hblank),
 	.vblank(vblank),
-	.de(de),
+	//.de(de),
 	//.colours(colour_scheme),
 	//.resolution(resolution),
 	.monitor_type(monitor_type),

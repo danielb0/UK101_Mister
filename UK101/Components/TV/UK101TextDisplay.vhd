@@ -34,8 +34,7 @@ entity UK101TextDisplay is
 		hsync_out  	: out  std_logic;
 		vsync_out  	: out  std_logic;
 		hblank_out  	: out  std_logic;
-		vblank_out 	: out  std_logic;
-		de 	: out  std_logic
+		vblank_out 	: out  std_logic
    );
 end UK101TextDisplay;
 
@@ -71,7 +70,6 @@ begin
 	vblank<= not vActive;
 	hblank_out <= hblank;
 	vblank_out <= vblank;
-	de <= not(hblank or vblank);
 	r <= video;
 	g <= video;
 	b <= video;
