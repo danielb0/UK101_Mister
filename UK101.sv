@@ -349,7 +349,7 @@ video_freak video_freak
 //);
 
 
-video_mixer #(.LINE_LENGTH(532), .HALF_DEPTH(0), .GAMMA(0)) video_mixer
+video_mixer #(.LINE_LENGTH(531), .HALF_DEPTH(1), .GAMMA(1)) video_mixer
 (
 	.*,
 	.CLK_VIDEO(CLK_VIDEO),
@@ -357,9 +357,9 @@ video_mixer #(.LINE_LENGTH(532), .HALF_DEPTH(0), .GAMMA(0)) video_mixer
 	.scandoubler(scale || forced_scandoubler),
 	.hq2x(scale == 1),
 
-	.R({8{r}}),
-	.G({8{g}}),
-	.B({8{b}}),
+	.R({4{r}}),
+	.G({4{g}}),
+	.B({4{b}}),
 	.HSync(hs),
 	.VSync(vs),
 	//.gamma_bus(gamma_bus),
