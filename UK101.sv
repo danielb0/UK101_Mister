@@ -349,7 +349,7 @@ video_freak video_freak
 //);
 
 
-video_mixer #(.LINE_LENGTH(531), .HALF_DEPTH(1), .GAMMA(1)) video_mixer
+video_mixer #(.LINE_LENGTH(494), .HALF_DEPTH(1), .GAMMA(1)) video_mixer
 (
 	.*,
 	.CLK_VIDEO(CLK_VIDEO),
