@@ -249,7 +249,7 @@ wire freeze_sync;
 //assign CE_PIX = 1;
 reg [2:0] count = 0;
 
-always @(negedge clk_sys) begin
+always @(posedge clk_sys) begin
 	if (count == 5)
 	begin
 		count <= 0;

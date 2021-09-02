@@ -92,10 +92,11 @@ begin
 -- 64uS per horiz line (3200 clocks)
 -- 4.7us horiz sync (235 clocks)
 		if rising_edge(clk) then
-			IF horizCount < 3200 THEN
+		  if ce_pix = '1' then
+			IF horizCount < 534 THEN
 				horizCount <= horizCount + 1;
 --				if (horizCount < 600) or (horizCount > 3000) then
-				if (horizCount < 40) or (horizCount > 3000) then
+				if (horizCount < 7) or (horizCount > 500) then
 					hActive <= '0';
 					charHoriz <= (others => '0');
 				else
@@ -130,7 +131,7 @@ begin
 				end if;
 
 			END IF;
-			if horizCount < 235 then
+			if horizCount < 39 then
 				hSync <= '0';
 			else
 				hSync <= '1';
@@ -153,6 +154,7 @@ begin
 				video <= '0';
 			end if;
 		end if;
+	end if;	
 	END PROCESS;	
   
  end rtl;
