@@ -173,7 +173,7 @@ localparam CONF_STR = {
 	"UK101;;",
 	"-;",
 	"O89,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
-	"OCD,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%;",
+	//"OCD,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%;",
 	"OFG,Scale,Normal,V-Integer,Narrower HV-Integer,Wider HV-Integer;",
 	//"O34,Colours,White on blue,White on black,Green on black,Yellow on black;",
 	//"D0O55,Screen size,64x32,48x16;",
@@ -214,8 +214,7 @@ hps_io #(.CONF_STR(CONF_STR),.PS2DIV(2000)) hps_io
 	.ps2_kbd_data_out(PS2_DAT),
 	.forced_scandoubler(forced_scandoubler),
 	.status_menumask({status[6]}),
-	.gamma_bus(gamma_bus),
-
+	.gamma_bus(gamma_bus)
 
 );
 ///////////////////
