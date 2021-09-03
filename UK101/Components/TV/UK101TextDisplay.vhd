@@ -121,7 +121,7 @@ begin
 							charScanLine <= (others => '0');
 							charVert <= charVert+1;
 						else
-							if vertLineCount /= 38 then
+							if vertLineCount /= 37 then
 								charScanLine <= charScanLine+1;
 							end if;
 						end if;
@@ -143,13 +143,11 @@ begin
 			end if;
 			
 			if hActive='1' and vActive = '1' then
-				if ce_pix = '1' then
 					video <= charData(7-to_integer(unsigned(pixelCount)));
 					if pixelCount = 7 then
 						charHoriz <= charHoriz+1;
 					end if;
 					pixelCount <= pixelCount+1;
-				end if;
 			else
 				video <= '0';
 			end if;
