@@ -226,6 +226,7 @@ hps_io #(.CONF_STR(CONF_STR),.PS2DIV(2000)) hps_io
 	.forced_scandoubler(forced_scandoubler),
 	.status_menumask({status[11],status[6]}),
 	
+	.gamma_bus(gamma_bus)
 	.ioctl_download(ioctl_download),
 	.ioctl_wr(ioctl_wr),
 	.ioctl_addr(ioctl_addr),
@@ -233,41 +234,39 @@ hps_io #(.CONF_STR(CONF_STR),.PS2DIV(2000)) hps_io
 	.ioctl_index(ioctl_index),
 	.ioctl_wait(ioctl_wait),
 
-
 );
 ///////////////////
 //  PLL - clocks are the most important part of a system
 ///////////////////////////////////////////////////
 wire clk_sys, locked;
 wire clk_VIDEO;
+wire pll_clk_video;
 
 pll pll
 (
 	.refclk(CLK_50M),
 	.rst(0),
 	.outclk_0(clk_sys), // 50M
-	.outclk_1(CLK_VIDEO),
 	.locked(locked)
 );
 
 ///////////////////////////////////////////////////
 wire reset = RESET | status[0] | buttons[1] | status[10] ;
 
-//assign CLK_VIDEO = clk_sys;
+assign CLK_VIDEO = clk_sys;
 
 
 ///////////////////////////////////////////////////
 wire r, g, b;
-wire vs,hs,de;
+wire vs,hs;
 wire hsync, vsync;
 wire hblank, vblank;
 wire temp_data;
 wire CE_PIX;
 wire freeze_sync;
-//assign CE_PIX = 1;
 reg [2:0] count = 0;
 
-always @(negedge clk_sys) begin
+always @(posedge clk_sys) begin
 	if (count == 5)
 	begin
 		count <= 0;
@@ -275,18 +274,10 @@ always @(negedge clk_sys) begin
 		end
 	else	
 		begin
-		count <= count + 1;
+		count <= count + 1'b1;
 		CE_PIX <= 1'b0;
 		end
 end
-		
-
-//assign VGA_R = {8{r}};
-//assign VGA_G = {8{g}};
-//assign VGA_B = {8{b}};
-//	.G({8{g}}),
-//	.B({8{b}}),
-//	.HSync(hs),
 
 
 wire [1:0] scale = status[13:12];
@@ -303,13 +294,12 @@ uk101 uk101
 	.ps2Data(PS2_DAT),
 	.hsync(hs),
 	.vsync(vs),	
-	//.de(de),	
+	.ce_pix(CE_PIX),	
 	.r(r),			
 	.g(g),
 	.b(b),	
 	.hblank(hblank),
 	.vblank(vblank),
-	.de(de),
 	//.colours(colour_scheme),
 	//.resolution(resolution),
 	.monitor_type(monitor_type),
@@ -348,32 +338,7 @@ video_freak video_freak
 
 
 
-wire[7:0] red;
-wire[7:0] green;
-wire[7:0] blue;
-
-video_cleaner video_cleaner
-(
-	.clk_vid(CLK_VIDEO),
-	.ce_pix(CE_PIX),
-	.R({8{r}}),
-	.G({8{g}}),
-	.B({8{b}}),
-	.HSync(hs),
-	.VSync(vs),
-	.HBlank(hblank),
-	.VBlank(vblank),
-
-	.VGA_R(red),
-	.VGA_G(green),
-	.VGA_B(blue),
-	.VGA_VS(vsync),
-	.VGA_HS(hsync),
-	.VGA_DE(de)
-);
-
-
-video_mixer #(.LINE_LENGTH(494), .HALF_DEPTH(0), .GAMMA(0)) video_mixer
+video_mixer #(.LINE_LENGTH(494), .HALF_DEPTH(1), .GAMMA(1)) video_mixer
 (
 	.*,
 	.CLK_VIDEO(CLK_VIDEO),
@@ -381,23 +346,16 @@ video_mixer #(.LINE_LENGTH(494), .HALF_DEPTH(0), .GAMMA(0)) video_mixer
 	.scandoubler(scale || forced_scandoubler),
 	.hq2x(scale == 1),
 
-	.R(red),
-	.G(green),
-	.B(blue),
-	.HSync(hsync),
-	.VSync(vsync),
-	//.gamma_bus(gamma_bus),
+	.R({4{r}}),
+	.G({4{g}}),
+	.B({4{b}}),
+	.HSync(hs),
+	.VSync(vs),
+
 
 	.HBlank(hblank),
-	.VBlank(vblank),
-//	//outs
-//	.VGA_R(VGA_R),
-//	.VGA_G(VGA_G),
-//	.VGA_B(VGA_B),
-//
-//	.VGA_VS(VGA_VS),
-//	.VGA_HS(VGA_HS),
-//	.VGA_DE(VGA_DE)
+	.VBlank(vblank)
+
 );
 
 
