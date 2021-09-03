@@ -255,7 +255,7 @@ always @(posedge clk_sys) begin
 		end
 	else	
 		begin
-		count <= count + 1;
+		count <= count + 1'b1;
 		CE_PIX <= 1'b0;
 		end
 end
