@@ -223,11 +223,6 @@ begin
 		end if;
 	end process;
 	
---	pll_internal : entity work.pll_internal
---	port map (
---	inclk0 => clk,
---	c0 => video_clock
---	);
 
 	u6 : entity work.UK101TextDisplay
 	port map (

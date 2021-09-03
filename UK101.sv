@@ -246,7 +246,6 @@ wire hsync, vsync;
 wire hblank, vblank;
 wire CE_PIX;
 wire freeze_sync;
-//assign CE_PIX = 1;
 reg [2:0] count = 0;
 
 always @(posedge clk_sys) begin
@@ -261,14 +260,6 @@ always @(posedge clk_sys) begin
 		CE_PIX <= 1'b0;
 		end
 end
-		
-
-//assign VGA_R = {8{r}};
-//assign VGA_G = {8{g}};
-//assign VGA_B = {8{b}};
-//	.G({8{g}}),
-//	.B({8{b}}),
-//	.HSync(hs),
 
 
 wire [1:0] scale = status[13:12];
@@ -291,7 +282,6 @@ uk101 uk101
 	.b(b),	
 	.hblank(hblank),
 	.vblank(vblank),
-	//.de(de),
 	//.colours(colour_scheme),
 	//.resolution(resolution),
 	.monitor_type(monitor_type),
@@ -324,31 +314,6 @@ video_freak video_freak
 
 
 
-//wire[7:0] red;
-//wire[7:0] green;
-//wire[7:0] blue;
-
-//video_cleaner video_cleaner
-//(
-//	.clk_vid(CLK_VIDEO),
-//	.ce_pix(CE_PIX),
-//	.R({8{r}}),
-//	.G({8{g}}),
-//	.B({8{b}}),
-//	.HSync(hs),
-//	.VSync(vs),
-//	.HBlank(hblank),
-//	.VBlank(vblank),
-//
-//	.VGA_R(red),
-//	.VGA_G(green),
-//	.VGA_B(blue),
-//	.VGA_VS(vsync),
-//	.VGA_HS(hsync),
-//	.VGA_DE(de)
-//);
-
-
 video_mixer #(.LINE_LENGTH(494), .HALF_DEPTH(1), .GAMMA(1)) video_mixer
 (
 	.*,
@@ -362,18 +327,11 @@ video_mixer #(.LINE_LENGTH(494), .HALF_DEPTH(1), .GAMMA(1)) video_mixer
 	.B({4{b}}),
 	.HSync(hs),
 	.VSync(vs),
-	//.gamma_bus(gamma_bus),
+
 
 	.HBlank(hblank),
 	.VBlank(vblank)
-//	//outs
-//	.VGA_R(VGA_R),
-//	.VGA_G(VGA_G),
-//	.VGA_B(VGA_B),
-//
-//	.VGA_VS(VGA_VS),
-//	.VGA_HS(VGA_HS),
-//	.VGA_DE(VGA_DE)
+
 );
 
 
