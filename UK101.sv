@@ -226,7 +226,7 @@ hps_io #(.CONF_STR(CONF_STR),.PS2DIV(2000)) hps_io
 	.forced_scandoubler(forced_scandoubler),
 	.status_menumask({status[11],status[6]}),
 	
-	.gamma_bus(gamma_bus)
+	.gamma_bus(gamma_bus),
 	.ioctl_download(ioctl_download),
 	.ioctl_wr(ioctl_wr),
 	.ioctl_addr(ioctl_addr),
