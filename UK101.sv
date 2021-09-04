@@ -165,7 +165,7 @@ assign BUTTONS = 0;
 
 
 
-assign LED_USER  = 1;
+//assign LED_USER  = 1;
 
 
 `include "build_id.v"
@@ -287,7 +287,8 @@ uk101 uk101
 	.baud_rate(baud_rate),
 	.rxd(UART_RXD),
 	.txd(UART_TXD),
-	.rts(UART_RTS)
+	.rts(UART_RTS),
+	.led(LED_USER)
 );
 
 
