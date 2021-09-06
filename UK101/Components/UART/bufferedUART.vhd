@@ -22,6 +22,8 @@ library ieee;
 
 entity bufferedUART is
 	port (
+		clk		:	in std_logic;
+		rst		:	in std_logic;
 		n_wr    : in  std_logic;
 		n_rd    : in  std_logic;
 		regSel  : in  std_logic;
@@ -39,68 +41,71 @@ entity bufferedUART is
 		ioctl_data : in std_logic_vector(7 downto 0);
       ioctl_addr :  in std_logic_vector(15 downto 0);
 		address : in std_logic;
-		dout		:out std_logic_vector(7 downto 0);   -- 8-bit output bus.
-      data_ready : out std_logic 
+		dout		:out std_logic_vector(7 downto 0) -- 8-bit output bus
+      --data_ready : out std_logic 
 
    );
 end bufferedUART;
 
 architecture rtl of bufferedUART is
-
-	--save loaded data into ram
-   --signal ascii_last_byte : std_logic_vector(15 downto 0);
-  -- reg [7:0] ascii_data[0:65535]; //65536
 	
 	type byteArray is array (0 to 65535) of std_logic_vector(7 downto 0);
 	signal ascii_data : byteArray;
-   --signal text_byte : unsigned(15 downto 0);
+   --signal v_text_byte : unsigned(15 downto 0);
 	signal ascii : std_logic_vector(7 downto 0);
    signal in_dl : std_logic;
 	signal ascii_rdy : std_logic;
-	signal w_data_ready : std_logic;
+	--signal w_data_ready : std_logic;
 
 	
 begin
 
 	
-	output: process (rxclock)
+	output: process (rxClock)
 	
-	variable ascii_last_byte : natural range 0 to 65535 := 0;
-	variable text_byte : natural range 0 to 65535 := 0;
+	variable v_ascii_last_byte : natural range 0 to 65535 := 0;
+	variable v_text_byte : natural range 0 to 65535 := 0;
    variable v_ioctl_addr : natural range 0 to 65535 := 0;
 	begin
+
 	
-		if rising_edge(rxclock) then
+		if rising_edge(rxClock) then
 		
-				if ascii_rdy = '0' and  w_data_ready = '1' and ascii_last_byte = text_byte then
-					ascii <= ascii_data(text_byte);
+			
+				if rst = '1' then
+					ascii_rdy   <= '0';
+					v_ascii_last_byte := 0;
+				end if;
+		
+				if ascii_rdy = '0' and v_ascii_last_byte = v_text_byte then
+					ascii <= ascii_data(v_text_byte);
 					ascii_rdy   <= '1';
-               text_byte := text_byte + 1;
+               v_text_byte := v_text_byte + 1;
 				end if;
 		
 				if ioctl_download ='1' then
-					v_ioctl_addr:=to_integer(unsigned(ioctl_addr));
+					v_ioctl_addr := to_integer(unsigned(ioctl_addr));
 					ascii_data(v_ioctl_addr) <= ioctl_data;
-					ascii_last_byte := v_ioctl_addr;
-					text_byte := 0;
+					v_ascii_last_byte := v_ioctl_addr;
+					v_text_byte := 0;
 					in_dl <= '1';
-				elsif in_dl = '1' and text_byte > ascii_last_byte then
+				elsif in_dl = '1' and v_text_byte > v_ascii_last_byte then
 					  in_dl <= '0';
 				end if;
 			 
-			 if address = '0' then
+			  if address = '0' then
 						--RX buffer address
 				dout <= ascii(7 downto 0);
-				ascii_rdy <= '1'; 
+				ascii_rdy <= '0'; 
 			 else
 					  --RX status register
 				dout <= ascii_rdy & "0000000";
 			 end if;
 		end if;
 
-	w_data_ready <= in_dl and not ioctl_download;
+	--w_data_ready <= in_dl and not ioctl_download;
 	
-	data_ready <= w_data_ready;
+	--data_ready <= w_data_ready;
 
 	end process;
 		

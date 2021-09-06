@@ -297,7 +297,7 @@ uk101 uk101
 	.txd(UART_TXD),
 	.rts(UART_RTS),
 	.led(LED_USER),
-	.ioctl_download(ioctl_download && ioctl_index),
+	.ioctl_download(ioctl_download),
    .ioctl_data(ioctl_data),
    .ioctl_addr(ioctl_addr)
 );

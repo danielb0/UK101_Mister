@@ -96,6 +96,7 @@ architecture struct of uk101 is
 	signal serialClkCount2: integer := 0;
 	signal latchedbits : std_logic_vector(7 downto 0);
 	signal ascii_data_ready : std_logic;
+	signal outbit : std_logic;
 	
 
 
@@ -191,6 +192,8 @@ begin
 
 	u5: entity work.bufferedUART
 	port map(
+		clk => clk,
+		rst => not n_reset,
 		n_wr => n_aciaCS or cpuClock or n_WR,
 		n_rd => n_aciaCS or cpuClock or (not n_WR),
 		regSel => cpuAddress(0),
@@ -207,8 +210,8 @@ begin
 		ioctl_download => ioctl_download,
 	   ioctl_data => ioctl_data,
 		ioctl_addr => ioctl_addr,
-      dout => aciaData,
-      data_ready => ascii_data_ready
+      dout => aciaData
+      --data_ready => ascii_data_ready
 	
 	);
 
