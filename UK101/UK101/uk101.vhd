@@ -42,7 +42,10 @@ entity uk101 is
 		vblank		:	out std_logic;
 		ps2Clk		: in std_logic;
 		ps2Data		: in std_logic;
-		led			: out std_logic
+		led			: out std_logic;
+	   ioctl_download : in std_logic;
+		ioctl_data : in std_logic_vector(7 downto 0);
+      ioctl_addr  : in std_logic_vector(15 downto 0)
 	);
 end uk101;
 
@@ -92,6 +95,7 @@ architecture struct of uk101 is
 	signal serialClkCount1: integer := 0;
 	signal serialClkCount2: integer := 0;
 	signal latchedbits : std_logic_vector(7 downto 0);
+	signal ascii_data_ready : std_logic;
 	
 
 
@@ -190,15 +194,22 @@ begin
 		n_wr => n_aciaCS or cpuClock or n_WR,
 		n_rd => n_aciaCS or cpuClock or (not n_WR),
 		regSel => cpuAddress(0),
-		dataIn => cpuDataOut,
-		dataOut => aciaData,
+		--dataIn => cpuDataOut,
+		--dataOut => aciaData,
 		rxClock => serialClock,
 		txClock => serialClock,
 		rxd => rxd,
 		txd => txd,
 		n_cts => '0',
 		n_dcd => '0',
-		n_rts => rts
+		n_rts => rts,
+		address => cpuAddress(0),
+		ioctl_download => ioctl_download,
+	   ioctl_data => ioctl_data,
+		ioctl_addr => ioctl_addr,
+      dout => aciaData,
+      data_ready => ascii_data_ready
+	
 	);
 
 	process (clk)

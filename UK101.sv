@@ -172,6 +172,7 @@ assign BUTTONS = 0;
 localparam CONF_STR = {
 	"UK101;;",
 	"-;",
+	"F,TXT,Load Ascii;",
 	"O89,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
 	"OCD,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%;",
 	"OFG,Scale,Normal,V-Integer,Narrower HV-Integer,Wider HV-Integer;",
@@ -214,7 +215,14 @@ hps_io #(.CONF_STR(CONF_STR),.PS2DIV(2000)) hps_io
 	.ps2_kbd_data_out(PS2_DAT),
 	.forced_scandoubler(forced_scandoubler),
 	.status_menumask({status[6]}),
-	.gamma_bus(gamma_bus)
+	.gamma_bus(gamma_bus),
+	
+	.ioctl_download(ioctl_download),
+	.ioctl_wr(ioctl_wr),
+	.ioctl_addr(ioctl_addr),
+	.ioctl_dout(ioctl_data),
+	.ioctl_index(ioctl_index),
+	.ioctl_wait(ioctl_wait)
 
 );
 ///////////////////
@@ -288,7 +296,10 @@ uk101 uk101
 	.rxd(UART_RXD),
 	.txd(UART_TXD),
 	.rts(UART_RTS),
-	.led(LED_USER)
+	.led(LED_USER),
+	.ioctl_download(ioctl_download && ioctl_index),
+   .ioctl_data(ioctl_data),
+   .ioctl_addr(ioctl_addr)
 );
 
 
