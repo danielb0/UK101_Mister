@@ -195,7 +195,7 @@ begin
 		clk => clk,
 		rst => not n_reset,
 		n_wr => n_aciaCS or cpuClock or n_WR,
-		n_rd => n_aciaCS or cpuClock or (not n_WR),
+		n_rd => n_aciaCS,
 		regSel => cpuAddress(0),
 		--dataIn => cpuDataOut,
 		--dataOut => aciaData,
