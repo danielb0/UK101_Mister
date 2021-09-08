@@ -61,7 +61,7 @@ architecture rtl of bufferedUART is
 begin
 
 	
-	output: process (n_rd)
+	o1: process (n_rd)
 	
 	variable v_ascii_last_byte : natural range 0 to 65535 := 0;
 	variable v_text_byte : natural range 0 to 65535 := 0;
@@ -73,13 +73,14 @@ begin
 		
 			
 				if rst = '1' then
-					ascii_rdy   <= '0';
+				--	ascii_rdy   <= '0';
 					v_ascii_last_byte := 0;
 				end if;
 		
-				if ascii_rdy = '0' and v_ascii_last_byte = v_text_byte then
+				--if ascii_rdy = '0' and 
+				if v_ascii_last_byte = v_text_byte then
 					ascii <= ascii_data(v_text_byte);
-					ascii_rdy   <= '1';
+					--ascii_rdy   <= '1';
                v_text_byte := v_text_byte + 1;
 				end if;
 		
@@ -92,26 +93,26 @@ begin
 				elsif in_dl = '1' and v_text_byte > v_ascii_last_byte then
 					  in_dl <= '0';
 				end if;
-				
-				
-				
-			-- if rising_edge(rxclock) then
-			  if address = '0' then
+			end if;
+		end process;
+		
+
+	o2: process (rxclock)		
+		begin		
+		if rising_edge(rxclock) then
+			  if address = '1' then
 						--RX buffer address
 				dout <= ascii(7 downto 0);
-				ascii_rdy <= '0'; 
+				--ascii_rdy <= '0'; 
 			 else
 					  --RX status register
-				dout <= ascii_rdy & "0000000";
+				dout <=  "00000000"; --ascii_rdy &
 			 end if;
-		--	 end if;
 		end if;
-
+	end process;
 	--w_data_ready <= in_dl and not ioctl_download;
 	
 	--data_ready <= w_data_ready;
-
-	end process;
 		
 		
 end rtl;
