@@ -55,7 +55,7 @@ architecture rtl of bufferedUART is
 	signal ascii : std_logic_vector(7 downto 0);
    signal in_dl : std_logic;
 	signal ascii_rdy : std_logic;
-	--signal w_data_ready : std_logic;
+	signal w_data_ready : std_logic;
 
 	
 begin
@@ -69,18 +69,14 @@ begin
 	begin
 
 	
-		if falling_edge(n_rd) then
+		if rising_edge(n_rd) then
 		
-			
 				if rst = '1' then
-				--	ascii_rdy   <= '0';
+					ascii_rdy   <= '0';
 					v_ascii_last_byte := 0;
-				end if;
-		
-				--if ascii_rdy = '0' and 
-				if v_ascii_last_byte = v_text_byte then
+				elsif ascii_rdy = '0' and w_data_ready = '1' and v_ascii_last_byte = v_text_byte then
 					ascii <= ascii_data(v_text_byte);
-					--ascii_rdy   <= '1';
+					ascii_rdy   <= '1';
                v_text_byte := v_text_byte + 1;
 				end if;
 		
@@ -94,23 +90,18 @@ begin
 					  in_dl <= '0';
 				end if;
 			end if;
-		end process;
 		
-
-	o2: process (rxclock)		
-		begin		
-		if rising_edge(rxclock) then
 			  if address = '1' then
 						--RX buffer address
 				dout <= ascii(7 downto 0);
-				--ascii_rdy <= '0'; 
+				ascii_rdy <= '0'; 
 			 else
 					  --RX status register
-				dout <=  "00000000"; --ascii_rdy &
+				dout <=  ascii_rdy &"0000000"; --ascii_rdy &
 			 end if;
-		end if;
+
 	end process;
-	--w_data_ready <= in_dl and not ioctl_download;
+	w_data_ready <= in_dl and not ioctl_download;
 	
 	--data_ready <= w_data_ready;
 		
