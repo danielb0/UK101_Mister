@@ -38,6 +38,7 @@ entity bufferedUART is
 		n_cts   : in  std_logic; 
 		n_dcd   : in  std_logic;
 		ioctl_download : in std_logic;
+		ioctl_wr : in std_logic;
 		ioctl_data : in std_logic_vector(7 downto 0);
       ioctl_addr :  in std_logic_vector(15 downto 0);
 		address : in std_logic;
@@ -49,13 +50,18 @@ end bufferedUART;
 
 architecture rtl of bufferedUART is
 	
-	type byteArray is array (0 to 65535) of std_logic_vector(7 downto 0);
+	type byteArray is array (0 to 1024) of std_logic_vector(7 downto 0);
 	signal ascii_data : byteArray;
    --signal v_text_byte : unsigned(15 downto 0);
 	signal ascii : std_logic_vector(7 downto 0);
    signal in_dl : std_logic;
 	signal ascii_rdy : std_logic;
 	signal w_data_ready : std_logic;
+	signal i_outCounter  : integer range 0 to 65535 := 0;
+	signal i_ascii_last_byte : integer range 0 to 65535 := 0;
+	signal i_ioctl_addr : natural range 0 to 65535 := 0;
+	signal i_text_byte : natural range 0 to 65535 := 0;
+	
 
 	
 begin
@@ -63,9 +69,11 @@ begin
 	
 	o1: process (clk)
 	
-	variable v_ascii_last_byte : natural range 0 to 65535 := 0;
-	variable v_text_byte : natural range 0 to 65535 := 0;
-   variable v_ioctl_addr : natural range 0 to 65535 := 0;
+
+
+
+
+	
 	begin
 
 	
@@ -73,34 +81,35 @@ begin
 		
 				if rst = '1' then
 					ascii_rdy   <= '0';
-					v_ascii_last_byte := 0;
-				elsif ascii_rdy = '0' and w_data_ready = '1' and v_ascii_last_byte = v_text_byte then
-					ascii <= ascii_data(v_text_byte);
+					i_ascii_last_byte <= 0;
+				elsif ascii_rdy = '0' and i_ascii_last_byte = i_text_byte then
+					ascii <= ascii_data(i_text_byte);
 					ascii_rdy   <= '1';
-               v_text_byte := v_text_byte + 1;
+               i_text_byte <= i_text_byte + 1;
 				end if;
 		
-				if ioctl_download ='1' then
-					v_ioctl_addr := to_integer(unsigned(ioctl_addr));
-					ascii_data(v_ioctl_addr) <= ioctl_data;
-					v_ascii_last_byte := v_ioctl_addr;
-					v_text_byte := 0;
+				if ioctl_download = '1' and  ioctl_wr ='1' then
+					i_ioctl_addr <= to_integer(unsigned(ioctl_addr));
+					ascii_data(i_ioctl_addr) <= ioctl_data;
+					i_ascii_last_byte <= i_ioctl_addr;
+					i_text_byte <= 0;
 					in_dl <= '1';
-				elsif in_dl = '1' and v_text_byte > v_ascii_last_byte then
+				elsif in_dl = '1' and i_text_byte > i_ascii_last_byte then
 					  in_dl <= '0';
 				end if;
 			end if;
 		
 		
-		if n_rd = '0' and address = '1' then
-
+		if n_rd = '0' and i_outCounter < 1024 then
+				ascii <= ascii_data(i_outCounter);
 						--RX buffer address
-				dout <= ascii(7 downto 0);
+			   dout <= ascii(7 downto 0);
+				i_outCounter <= i_outCounter+1;
 				ascii_rdy <= '0'; 
-			 else
+			-- else
 					  --RX status register
-				dout <=  ascii_rdy &"0000000"; --ascii_rdy &
-			 end if;
+				--dout <=  ascii_rdy &"0000000"; --ascii_rdy &
+		end if;
 
 
 	end process;

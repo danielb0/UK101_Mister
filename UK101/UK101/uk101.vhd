@@ -44,6 +44,7 @@ entity uk101 is
 		ps2Data		: in std_logic;
 		led			: out std_logic;
 	   ioctl_download : in std_logic;
+		ioctl_wr : in std_logic;
 		ioctl_data : in std_logic_vector(7 downto 0);
       ioctl_addr  : in std_logic_vector(15 downto 0)
 	);
@@ -210,6 +211,7 @@ begin
 		ioctl_download => ioctl_download,
 	   ioctl_data => ioctl_data,
 		ioctl_addr => ioctl_addr,
+		ioctl_wr => ioctl_wr,
       dout => aciaData
       --data_ready => ascii_data_ready
 	
