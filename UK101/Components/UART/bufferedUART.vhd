@@ -57,7 +57,7 @@ architecture rtl of bufferedUART is
    signal in_dl : std_logic;
 	signal ascii_rdy : std_logic;
 	signal w_data_ready : std_logic;
-	signal i_outCounter  : integer range 0 to 65535 := 0;
+	signal i_outCounter  : integer range 0 to 1024 := 0;
 	signal i_ascii_last_byte : integer range 0 to 65535 := 0;
 	signal i_ioctl_addr : natural range 0 to 65535 := 0;
 	signal i_text_byte : natural range 0 to 65535 := 0;
@@ -77,35 +77,42 @@ begin
 	begin
 
 	
-		if rising_edge(clk) then
+		if falling_edge(clk) then
 		
 				if rst = '1' then
-					ascii_rdy   <= '0';
+					i_outCounter<=0;
+					
+					--ascii_rdy   <= '0';
 					i_ascii_last_byte <= 0;
-				elsif ascii_rdy = '0' and i_ascii_last_byte = i_text_byte then
-					ascii <= ascii_data(i_text_byte);
-					ascii_rdy   <= '1';
-               i_text_byte <= i_text_byte + 1;
-				end if;
+--				elsif ascii_rdy = '0' and i_ascii_last_byte = i_text_byte then
+--					--ascii <= ascii_data(i_text_byte);
+--					ascii_rdy   <= '1';
+--               i_text_byte <= i_text_byte + 1;
+			end if;
 		
-				if ioctl_download = '1' and  ioctl_wr ='1' then
+				if ioctl_wr = '1' and (i_ioctl_addr = 0 or i_ascii_last_byte /= i_ioctl_addr) then
+					if ioctl_addr = x"0000" then
+						i_outCounter <= 0;
+						ascii <= x"00";
+						i_ascii_last_byte <= 0;
+					end if;
 					i_ioctl_addr <= to_integer(unsigned(ioctl_addr));
 					ascii_data(i_ioctl_addr) <= ioctl_data;
 					i_ascii_last_byte <= i_ioctl_addr;
-					i_text_byte <= 0;
-					in_dl <= '1';
-				elsif in_dl = '1' and i_text_byte > i_ascii_last_byte then
-					  in_dl <= '0';
+					--i_text_byte <= 0;
+					--in_dl <= '1';
+			--	elsif in_dl = '1' and i_text_byte > i_ascii_last_byte then
+			--		  in_dl <= '0';
 				end if;
 			end if;
 		
 		
-		if n_rd = '0' and i_outCounter < 1024 then
-				ascii <= ascii_data(i_outCounter);
+		if n_rd = '0' and i_outCounter < i_ascii_last_byte then
+				ascii <= ascii_data(i_outCounter)(7 downto 0);
 						--RX buffer address
 			   dout <= ascii(7 downto 0);
 				i_outCounter <= i_outCounter+1;
-				ascii_rdy <= '0'; 
+				--ascii_rdy <= '0'; 
 			-- else
 					  --RX status register
 				--dout <=  ascii_rdy &"0000000"; --ascii_rdy &
@@ -113,7 +120,7 @@ begin
 
 
 	end process;
-	w_data_ready <= in_dl and not ioctl_download;
+	--w_data_ready <= in_dl and not ioctl_download;
 	
 	--data_ready <= w_data_ready;
 		
