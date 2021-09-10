@@ -61,6 +61,9 @@ architecture rtl of bufferedUART is
 	signal i_ascii_last_byte : integer range 0 to 65535 := 0;
 	signal i_ioctl_addr : natural range 0 to 65535 := 0;
 	signal i_text_byte : natural range 0 to 65535 := 0;
+	signal i_previous_addr : integer range 0 to 65535 := 0;
+	signal count : std_logic_vector(10 downto 0);
+	
 	
 
 	
@@ -68,14 +71,8 @@ begin
 
 	
 	o1: process (clk)
-	
-
-
-
-
-	
+		
 	begin
-
 	
 		if falling_edge(clk) then
 		
@@ -88,13 +85,14 @@ begin
 --					--ascii <= ascii_data(i_text_byte);
 --					ascii_rdy   <= '1';
 --               i_text_byte <= i_text_byte + 1;
-			end if;
+				end if;
 		
 				if ioctl_wr = '1' and (i_ioctl_addr = 0 or i_ascii_last_byte /= i_ioctl_addr) then
 					if ioctl_addr = x"0000" then
 						i_outCounter <= 0;
 						ascii <= x"00";
 						i_ascii_last_byte <= 0;
+						count <= "00000000000";
 					end if;
 					i_ioctl_addr <= to_integer(unsigned(ioctl_addr));
 					ascii_data(i_ioctl_addr) <= ioctl_data;
@@ -104,25 +102,31 @@ begin
 			--	elsif in_dl = '1' and i_text_byte > i_ascii_last_byte then
 			--		  in_dl <= '0';
 				end if;
-			end if;
+
 		
 		
 		if n_rd = '0' and i_outCounter < i_ascii_last_byte then
-				ascii <= ascii_data(i_outCounter)(7 downto 0);
+
 						--RX buffer address
-			   dout <= ascii(7 downto 0);
-				i_outCounter <= i_outCounter+1;
+
+			if count = "10000000000" then 		
+					ascii <= ascii_data(i_outCounter)(7 downto 0);
+					dout <= ascii(7 downto 0);
+					i_outCounter <= i_outCounter+1;
+			else
+					count <= count + '1';
+			end if;
+
 				--ascii_rdy <= '0'; 
 			-- else
 					  --RX status register
 				--dout <=  ascii_rdy &"0000000"; --ascii_rdy &
 		end if;
-
+		
+	end if;
+		
 
 	end process;
-	--w_data_ready <= in_dl and not ioctl_download;
-	
-	--data_ready <= w_data_ready;
 		
 		
 end rtl;
