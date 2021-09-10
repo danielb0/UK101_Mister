@@ -108,7 +108,7 @@ begin
 				ascii <= x"00";
 			end if;
 			
-			if n_rd = '0' and i_outCounter < i_ascii_last_byte then
+			if n_rd = '0' and i_outCounter < i_ioctl_addr then
 						ascii <= ascii_data(i_outCounter)(7 downto 0);
 						dout <= ascii(7 downto 0);
 						i_outCounter <= i_outCounter+1;
