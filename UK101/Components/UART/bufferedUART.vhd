@@ -72,20 +72,23 @@ begin
 		
 	begin
 	
-		if falling_edge(clk) then
+		if rising_edge (clk) then
 		
 				if rst = '1' then
 					i_ascii_last_byte <= 0;
 				end if;
 		
 				if ioctl_download = '0' then
+					in_dl <= '0';
 					i_ascii_last_byte <= 0;
 				end if;
+				
 		
 				if ioctl_wr = '1' and (i_ioctl_addr = 0 or i_ascii_last_byte /= i_ioctl_addr) then
 					i_ioctl_addr <= to_integer(unsigned(ioctl_addr));
 					ascii_data(i_ioctl_addr) <= ioctl_data;
 					i_ascii_last_byte <= i_ioctl_addr;
+					in_dl <= '1';
 				end if;
 		
 	end if;
@@ -93,22 +96,24 @@ begin
 
 	end process;
 	
-	o2:process (txClock)
+	o2:process (n_rd)
 	
 	begin
-		if rising_edge(txClock) then
+		if falling_edge(n_rd) then
 
-			
 			if rst = '1' then
 				i_outCounter<=0;
 			end if;
 			
-			if ioctl_download = '0' then
+		   if i_ascii_last_byte = 0 and ioctl_download = '1' then 
 				i_outCounter <= 0;
+			end if;
+			
+			if ioctl_download = '0' then
 				ascii <= x"00";
 			end if;
 			
-			if n_rd = '0' and i_outCounter < i_ioctl_addr then
+			if in_dl = '1' and i_outCounter < i_ioctl_addr then
 						ascii <= ascii_data(i_outCounter)(7 downto 0);
 						dout <= ascii(7 downto 0);
 						i_outCounter <= i_outCounter+1;
