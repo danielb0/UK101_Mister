@@ -84,77 +84,53 @@ begin
 	o1: process (clk)
 		
 	begin
+	    w_data_ready <= in_dl and  (not ioctl_download);
+		 n_rd = 
 	
 		if rising_edge (clk) then
 		
 				if rst = '1' then
 					i_ascii_last_byte <= 0;
-				end if;
-		
-				if i_outCounter = i_ioctl_addr then
-					in_dl <= '0';
-					i_ascii_last_byte <= 0;
-				end if;
-				
-		
-				if ioctl_wr = '1' and (i_ioctl_addr = 0 or i_ascii_last_byte /= i_ioctl_addr) then
-					i_ioctl_addr <= to_integer(unsigned(ioctl_addr));
-					ascii_data(i_ioctl_addr) <= ioctl_data;
-					i_ascii_last_byte <= i_ioctl_addr;
-					in_dl <= '1';
-				end if;
-		
-	end if;
-		
-
-	end process;
+					i_outCounter <= 0;
+					ascii_rdy <= '0';
+					prev_clk <= '0';
+				else				
+					if prev_clk = '1' and n_rd = '0' then
+							if ascii_rdy = '0' and w_data_ready = '1' and i_outCounter <= i_ascii_last_byte then
+										ascii <= ascii_data(i_outCounter)(7 downto 0);
+										i_outCounter <= i_outCounter+1;
+										ascii_rdy <= '1';
+							end if;
+					 end if;
+			
+					if ioctl_download = '1' then
+						i_ioctl_addr <= to_integer(unsigned(ioctl_addr));
+						ascii_data(i_ioctl_addr) <= ioctl_data;
+						i_ascii_last_byte <= i_ioctl_addr;
+						i_outCounter <= 0;
+						in_dl <= '1';
+					else
+						if in_dl = '1' and i_outCounter > i_ascii_last_byte then
+							in_dl<= '0';
+						end if;
+					end if;
 	
-	o2:process (clk)
-	
-	begin
-		if rising_edge(clk) then
-		
-			prev_clk <= new_clk;
-			
-			if rst = '1' then
-				i_outCounter<=0;
-				prev_clk <= '0';
-			end if;
-			
-		   if i_ascii_last_byte = I_OutCounter then 
-				i_outCounter <= 0;
-			end if;
-			
-			if prev_clk = '1' and new_clk = '0' then
-				if ascii_rdy = '0' then
-							ascii <= ascii_data(i_outCounter)(7 downto 0);
-							i_outCounter <= i_outCounter+1;
-							ascii_rdy <= '1';
-				end if;
-			end if;
-			
-			if n_rd = '0' then
-			
-				if address = '0' and  i_outCounter < i_ioctl_addr then
-			
-							dout <= ascii(7 downto 0);
-
-							ascii_rdy <= '0';
-				else
-							dout<=X"00";
-				end if;
-			
-			end if;
-			
-
+					prev_clk <= n_rd;
+						
+					if address = '1' then
 				
+								dout <= ascii(7 downto 0);
+
+								ascii_rdy <= '0';
+					else
+								dout<=X"00";
+					end if;
+				
+				end if;
 		end if;
 	
 	end process;
 	
-
-
-		
 		
 end rtl;
 
