@@ -42,8 +42,8 @@ entity bufferedUART is
 		ioctl_data : in std_logic_vector(7 downto 0);
       ioctl_addr :  in std_logic_vector(15 downto 0);
 		address : in std_logic;
-		dout		:out std_logic_vector(7 downto 0) -- 8-bit output bus
-      --data_ready : out std_logic 
+		dout		:out std_logic_vector(7 downto 0); -- 8-bit output bus
+      data_ready : out std_logic 
 
    );
 end bufferedUART;
@@ -85,7 +85,7 @@ begin
 		
 	begin
 	    w_data_ready <= in_dl and  (not ioctl_download);
-		 n_rd = 
+		 data_ready <= w_data_ready;
 	
 		if rising_edge (clk) then
 		

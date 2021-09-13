@@ -196,7 +196,7 @@ begin
 		clk => clk,
 		rst => not n_reset,
 		n_wr => n_aciaCS or cpuClock or n_WR,
-		n_rd => n_aciaCS or cpuClock or (not n_WR),
+		n_rd => (n_aciaCS or cpuClock or (not n_WR)) and ascii_data_ready,
 		regSel => cpuAddress(0),
 		--dataIn => cpuDataOut,
 		--dataOut => aciaData,
@@ -212,8 +212,8 @@ begin
 	   ioctl_data => ioctl_data,
 		ioctl_addr => ioctl_addr,
 		ioctl_wr => ioctl_wr,
-      dout => aciaData
-      --data_ready => ascii_data_ready
+      dout => aciaData,
+      data_ready => ascii_data_ready
 	
 	);
 
