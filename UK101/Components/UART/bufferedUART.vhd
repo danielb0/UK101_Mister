@@ -117,13 +117,13 @@ begin
 	
 					prev_clk <= n_rd;
 						
-					if address = '1' then
+					if address = '0' then
 				
 								dout <= ascii(7 downto 0);
 
 								ascii_rdy <= '0';
 					else
-								dout<=X"00";
+								dout<= ascii_rdy & "0000000";
 					end if;
 				
 				end if;
