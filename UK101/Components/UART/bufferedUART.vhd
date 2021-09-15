@@ -115,9 +115,7 @@ begin
 						end if;
 					end if;
 	
-					prev_clk <= new_clk;
-					
-					
+		
 					if n_rd = '0' then	
 						if address = '0' then
 					
@@ -125,12 +123,14 @@ begin
 
 									ascii_rdy <= '0';
 						else
-									dout<= "000000" & ascii_rdy & "0";
+									dout<= "000000" & not ascii_rdy & "0";
 						end if;
 					end if;
-				
 				end if;
+
+				prev_clk <= new_clk;
 		end if;
+		
 	
 	end process;
 	
@@ -163,7 +163,7 @@ entity Clock_Divider is
 				tmp<='0';
 			elsif(clk'event and clk='1') then
 				count <=count+1;
-				if (count = 4000) then
+				if (count = 832) then
 					tmp <= NOT tmp;
 					count <= 1;
 				end if;

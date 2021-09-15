@@ -193,7 +193,7 @@ begin
 
 	u5: entity work.bufferedUART
 	port map(
-		clk => clk,
+		clk => cpuClock,
 		rst => not n_reset,
 		n_wr => n_aciaCS or cpuClock or n_WR,
 		n_rd => (n_aciaCS or cpuClock or (not n_WR)) and ascii_data_ready,
