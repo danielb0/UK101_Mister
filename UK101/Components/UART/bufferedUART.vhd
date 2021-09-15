@@ -63,6 +63,8 @@ architecture rtl of bufferedUART is
 	signal i_text_byte : natural range 0 to 65535 := 0;
 	signal i_previous_addr : integer range 0 to 65535 := 0;
 	signal prev_clk : std_logic;
+	signal statusReg : std_logic_vector(7 downto 0) := (others => '0'); 
+	signal n_int_internal   : std_logic := '1';
 
 
  
@@ -75,18 +77,28 @@ begin
 
 
 --Instantiate the clock divider
-	uut: entity work.Clock_Divider PORT MAP (
-	clk => clk,
-	reset => rst,
-	clock_out => new_clk
-	);
+		uut: entity work.Clock_Divider PORT MAP (
+		clk => clk,
+		reset => rst,
+		clock_out => new_clk
+		);
+
+		statusReg(0) <= '0' when i_ioctl_addr = i_outCounter else '1';
+		statusReg(1) <=  '0';
+		statusReg(2) <= n_dcd;
+		statusReg(3) <= n_cts;
+		statusReg(7) <= not(n_int_internal);
+		  
+		-- interrupt mask
+		n_int <= n_int_internal;
+		n_int_internal <= '0' when (i_ioctl_addr /= i_outCounter) and in_dl = '1' else '1';
 	
-	o1: process (clk)
-		
-	begin
 	    w_data_ready <= in_dl and  (not ioctl_download);
 		 data_ready <= w_data_ready;
+		
+	o1: process (clk)
 	
+	begin
 		if rising_edge (clk) then
 		
 				if rst = '1' then
@@ -117,13 +129,13 @@ begin
 	
 		
 					if n_rd = '0' then	
-						if regSel = '0' then
+						if regSel = '1' then
 					
 									dataOut <= ascii(7 downto 0);
 
 									ascii_rdy <= '0';
 						else
-									dataOut<= "000000" & not ascii_rdy & "0";
+									dataOut<= statusReg;
 						end if;
 					end if;
 				end if;
