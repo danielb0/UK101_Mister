@@ -26,9 +26,9 @@ entity bufferedUART is
 		rst		:	in std_logic;
 		n_wr    : in  std_logic;
 		n_rd    : in  std_logic;
-		--regSel  : in  std_logic;
+		regSel  : in  std_logic;
 		--dataIn  : in  std_logic_vector(7 downto 0);
-		--dataOut : out std_logic_vector(7 downto 0);
+		dataOut : out std_logic_vector(7 downto 0);
 		n_int   : out std_logic; 
 		rxClock : in  std_logic; -- 16 x baud rate
 		txClock : in  std_logic; -- 16 x baud rate
@@ -41,8 +41,8 @@ entity bufferedUART is
 		ioctl_wr : in std_logic;
 		ioctl_data : in std_logic_vector(7 downto 0);
       ioctl_addr :  in std_logic_vector(15 downto 0);
-		address : in std_logic;
-		dout		:out std_logic_vector(7 downto 0); -- 8-bit output bus
+		--address : in std_logic;
+		--dout		:out std_logic_vector(7 downto 0); -- 8-bit output bus
       data_ready : out std_logic 
 
    );
@@ -95,7 +95,7 @@ begin
 					ascii_rdy <= '0';
 					prev_clk <= '0';
 				else				
-					if prev_clk = '1' and new_clk = '0' then
+					if prev_clk = '1' and rxclock = '0' then
 							if ascii_rdy = '0' and w_data_ready = '1' and i_outCounter <= i_ascii_last_byte then
 										ascii <= ascii_data(i_outCounter)(7 downto 0);
 										i_outCounter <= i_outCounter+1;
@@ -117,18 +117,18 @@ begin
 	
 		
 					if n_rd = '0' then	
-						if address = '0' then
+						if regSel = '0' then
 					
-									dout <= ascii(7 downto 0);
+									dataOut <= ascii(7 downto 0);
 
 									ascii_rdy <= '0';
 						else
-									dout<= "000000" & not ascii_rdy & "0";
+									dataOut<= "000000" & not ascii_rdy & "0";
 						end if;
 					end if;
 				end if;
 
-				prev_clk <= new_clk;
+				prev_clk <= rxclock;
 		end if;
 		
 	
@@ -163,7 +163,7 @@ entity Clock_Divider is
 				tmp<='0';
 			elsif(clk'event and clk='1') then
 				count <=count+1;
-				if (count = 832) then
+				if (count = 3000) then
 					tmp <= NOT tmp;
 					count <= 1;
 				end if;
