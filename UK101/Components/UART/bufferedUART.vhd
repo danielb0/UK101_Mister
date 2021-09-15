@@ -107,7 +107,7 @@ begin
 					ascii_rdy <= '0';
 					prev_clk <= '0';
 				else				
-					if prev_clk = '1' and rxclock = '0' then
+					if prev_clk = '1' and n_rd = '0' then
 							if ascii_rdy = '0' and w_data_ready = '1' and i_outCounter <= i_ascii_last_byte then
 										ascii <= ascii_data(i_outCounter)(7 downto 0);
 										i_outCounter <= i_outCounter+1;
@@ -140,7 +140,7 @@ begin
 					end if;
 				end if;
 
-				prev_clk <= rxclock;
+				prev_clk <= n_rd;
 		end if;
 		
 	
