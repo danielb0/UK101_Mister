@@ -197,7 +197,7 @@ begin
 		rst => not n_reset,
 		n_wr => n_aciaCS or cpuClock or n_WR,
 		n_rd => (n_aciaCS or cpuClock or (not n_WR)) and ascii_data_ready,
-		regSel => cpuAddress(0),
+		--regSel => cpuAddress(0),
 		--dataIn => cpuDataOut,
 		--dataOut => aciaData,
 		rxClock => cpuClock,
