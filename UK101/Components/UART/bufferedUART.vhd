@@ -91,6 +91,7 @@ begin
 					i_outCounter <= 0;
 					ascii_rdy <= '0';
 					prev_clk <= '0';
+					in_dl <= '0';
 				else				
 					if prev_clk = '1' and n_rd = '0' then
 							if ascii_rdy = '0' and w_data_ready = '1' and i_outCounter <= i_ascii_last_byte + 1 then
