@@ -65,23 +65,9 @@ architecture rtl of bufferedUART is
 	signal prev_clk : std_logic;
 	signal statusReg : std_logic_vector(7 downto 0) := (others => '0'); 
 	signal n_int_internal   : std_logic := '1';
-
-
- 
-----Outputs
-		signal new_clk : std_logic;
-
-
 	
 begin
 
-
---Instantiate the clock divider
-		uut: entity work.Clock_Divider PORT MAP (
-		clk => clk,
-		reset => rst,
-		clock_out => new_clk
-		);
 
 		statusReg(0) <= '0' when i_ioctl_addr = i_outCounter else '1';
 		statusReg(1) <=  '0';
@@ -150,38 +136,4 @@ begin
 end rtl;
 
 
-
-
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.numeric_std.ALL;
-
-entity Clock_Divider is
-	port ( clk,reset: in std_logic;
-	clock_out: out std_logic);
-	end Clock_Divider;
-	  
-	architecture bhv of Clock_Divider is
-	  
-		signal count: integer:=1;
-		signal tmp : std_logic := '0';
-		  
-		begin
-		  
-		process(clk,reset)
-		begin
-			if(reset='1') then
-				count<=1;
-				tmp<='0';
-			elsif(clk'event and clk='1') then
-				count <=count+1;
-				if (count = 3000) then
-					tmp <= NOT tmp;
-					count <= 1;
-				end if;
-			end if;
-			clock_out <= tmp;
-		end process;
-	  
-	end bhv;
 
