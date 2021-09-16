@@ -59,7 +59,6 @@ architecture rtl of bufferedUART is
 	signal w_data_ready : std_logic;
 	signal i_outCounter  : integer range 0 to 1024 := 0;
 	signal i_ascii_last_byte : integer range 0 to 65535 := 0;
-	signal i_ioctl_addr : natural range 0 to 65535 := 0;
 	signal i_text_byte : natural range 0 to 65535 := 0;
 	signal i_previous_addr : integer range 0 to 65535 := 0;
 	signal prev_clk : std_logic;
@@ -69,7 +68,7 @@ architecture rtl of bufferedUART is
 begin
 
 
-		statusReg(0) <= '0' when i_ioctl_addr = i_outCounter else '1';
+		statusReg(0) <= '0' when to_integer(unsigned(ioctl_addr)) = i_outCounter else '1';
 		statusReg(1) <=  '0';
 		statusReg(2) <= n_dcd;
 		statusReg(3) <= n_cts;
@@ -77,7 +76,7 @@ begin
 		  
 		-- interrupt mask
 		n_int <= n_int_internal;
-		n_int_internal <= '0' when (i_ioctl_addr /= i_outCounter) and in_dl = '1' else '1';
+		n_int_internal <= '0' when (to_integer(unsigned(ioctl_addr)) /= i_outCounter) and in_dl = '1' else '1';
 	
 	    w_data_ready <= in_dl and  (not ioctl_download);
 		 data_ready <= w_data_ready;
@@ -94,7 +93,7 @@ begin
 					prev_clk <= '0';
 				else				
 					if prev_clk = '1' and n_rd = '0' then
-							if ascii_rdy = '0' and w_data_ready = '1' and i_outCounter <= i_ascii_last_byte then
+							if ascii_rdy = '0' and w_data_ready = '1' and i_outCounter <= i_ascii_last_byte + 1 then
 										ascii <= ascii_data(i_outCounter)(7 downto 0);
 										i_outCounter <= i_outCounter+1;
 										ascii_rdy <= '1';
@@ -102,13 +101,12 @@ begin
 					 end if;
 			
 					if ioctl_download = '1' then
-						i_ioctl_addr <= to_integer(unsigned(ioctl_addr));
-						ascii_data(i_ioctl_addr) <= ioctl_data;
-						i_ascii_last_byte <= i_ioctl_addr;
+						ascii_data(to_integer(unsigned(ioctl_addr))) <= ioctl_data;
+						i_ascii_last_byte <= to_integer(unsigned(ioctl_addr));
 						i_outCounter <= 0;
 						in_dl <= '1';
 					else
-						if in_dl = '1' and i_outCounter > i_ascii_last_byte then
+						if in_dl = '1' and i_outCounter > to_integer(unsigned(ioctl_addr)) then
 							in_dl<= '0';
 						end if;
 					end if;
