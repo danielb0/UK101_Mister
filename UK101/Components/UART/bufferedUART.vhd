@@ -50,23 +50,20 @@ end bufferedUART;
 
 architecture rtl of bufferedUART is
 	
-	type byteArray is array (0 to 1024) of std_logic_vector(7 downto 0);
+	type byteArray is array (0 to 20480) of std_logic_vector(7 downto 0);
 	signal ascii_data : byteArray;
    --signal v_text_byte : unsigned(15 downto 0);
 	signal ascii : std_logic_vector(7 downto 0);
    signal in_dl : std_logic;
 	signal ascii_rdy : std_logic;
 	signal w_data_ready : std_logic;
-	signal i_outCounter  : integer range 0 to 1024 := 0;
+	signal i_outCounter  : integer range 0 to 20480 := 0;
 	signal i_ascii_last_byte : integer range 0 to 65535 := 0;
-	signal i_text_byte : natural range 0 to 65535 := 0;
-	signal i_previous_addr : integer range 0 to 65535 := 0;
 	signal prev_clk : std_logic;
 	signal statusReg : std_logic_vector(7 downto 0) := (others => '0'); 
 	signal n_int_internal   : std_logic := '1';
 	
 begin
-
 
 		statusReg(0) <= '0' when to_integer(unsigned(ioctl_addr)) = i_outCounter else '1';
 		statusReg(1) <=  '0';
@@ -88,7 +85,7 @@ begin
 		
 				if rst = '1' then
 					i_ascii_last_byte <= 0;
-					i_outCounter <= 0;
+					i_outCounter <= 20480;
 					ascii_rdy <= '0';
 					prev_clk <= '0';
 					in_dl <= '0';
