@@ -52,7 +52,6 @@ architecture rtl of bufferedUART is
 	
 	type byteArray is array (0 to 20480) of std_logic_vector(7 downto 0);
 	signal ascii_data : byteArray;
-   --signal v_text_byte : unsigned(15 downto 0);
 	signal ascii : std_logic_vector(7 downto 0);
    signal in_dl : std_logic;
 	signal ascii_rdy : std_logic;
@@ -91,7 +90,7 @@ begin
 					in_dl <= '0';
 				else				
 					if prev_clk = '1' and n_rd = '0' then
-							if ascii_rdy = '0' and w_data_ready = '1' and i_outCounter <= i_ascii_last_byte + 1 then
+							if ascii_rdy = '0' and w_data_ready = '1' and i_outCounter <= i_ascii_last_byte then
 										ascii <= ascii_data(i_outCounter)(7 downto 0);
 										i_outCounter <= i_outCounter+1;
 										ascii_rdy <= '1';
@@ -110,7 +109,7 @@ begin
 					end if;
 	
 		
-					if n_rd = '0' then	
+					if n_rd = '0' and in_dl = '1' then	
 						if regSel = '1' then
 					
 									dataOut <= ascii(7 downto 0);
