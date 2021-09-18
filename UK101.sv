@@ -174,6 +174,7 @@ localparam CONF_STR = {
 	"UK101;;",
 	"-;",
 	"F,TXT,Load Ascii;",
+	"O33,Load programs from, File,UART;",
 	"O89,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
 	"OCD,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%;",
 	"OFG,Scale,Normal,V-Integer,Narrower HV-Integer,Wider HV-Integer;",
@@ -196,7 +197,7 @@ wire  [1:0] buttons;
 wire [31:0] status;
 wire PS2_CLK;
 wire PS2_DAT;
-//wire [1:0] colour_scheme = status[4:3];
+wire loadFrom = status[3];
 //wire resolution;
 wire monitor_type=status[6];
 wire baud_rate=status[7];
@@ -305,6 +306,7 @@ uk101 uk101
 	.txd(UART_TXD),
 	.rts(UART_RTS),
 	.led(LED_USER),
+	.loadFrom(loadFrom),
 	.ioctl_download(ioctl_download),
    .ioctl_data(ioctl_data),
    .ioctl_addr(ioctl_addr),

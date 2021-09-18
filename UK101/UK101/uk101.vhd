@@ -43,6 +43,7 @@ entity uk101 is
 		ps2Clk		: in std_logic;
 		ps2Data		: in std_logic;
 		led			: out std_logic;
+		loadFrom			: in std_logic;
 	   ioctl_download : in std_logic;
 		ioctl_wr : in std_logic;
 		ioctl_data : in std_logic_vector(7 downto 0);
@@ -198,7 +199,7 @@ begin
 		n_wr => n_aciaCS or cpuClock or n_WR,
 		n_rd => n_aciaCS or cpuClock or (not n_WR),
 		regSel => cpuAddress(0),
-		--dataIn => cpuDataOut,
+		dataIn => cpuDataOut,
 		dataOut => aciaData,
 		rxClock => serialClock,
 		txClock => serialClock,
@@ -207,13 +208,12 @@ begin
 		n_cts => '0',
 		n_dcd => '0',
 		n_rts => rts,
-		--address => cpuAddress(0),
 		ioctl_download => ioctl_download,
 	   ioctl_data => ioctl_data,
 		ioctl_addr => ioctl_addr,
 		ioctl_wr => ioctl_wr,
-      --dout => aciaData,
-      data_ready => ascii_data_ready
+      data_ready => ascii_data_ready,
+		loadFrom => loadFrom
 	
 	);
 
