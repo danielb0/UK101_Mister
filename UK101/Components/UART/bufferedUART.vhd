@@ -99,9 +99,10 @@ architecture rtl of bufferedUART is
 begin
 
 		dataOut <= fileOut when loadFrom = '0' else uartOut;
-		statusReg(0) <= '0' when loadFrom = '0' and to_integer(unsigned(ioctl_addr)) = i_outCounter else '1';
+		statusReg(0) <= '0' when loadFrom = '0' and to_integer(unsigned(ioctl_addr)) = i_outCounter 
+							else '0' when loadFrom = '1' and rxInPointer=rxReadPointer else '1';
 		statusReg(1) <=  '0' when loadFrom = '0' else
-						     '1' when txByteWritten=txByteSent and loadFrom = '1' else '0';
+						     '1' when loadFrom = '1' and txByteWritten=txByteSent else '0';
 		statusReg(2) <= n_dcd;
 		statusReg(3) <= n_cts;
 		statusReg(7) <= not(n_int_internal);
