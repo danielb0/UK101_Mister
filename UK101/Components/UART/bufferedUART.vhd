@@ -57,6 +57,7 @@ architecture rtl of bufferedUART is
 	signal w_data_ready : std_logic;
 	signal i_outCounter  : integer range 0 to 20480 := 0;
 	signal i_ascii_last_byte : integer range 0 to 65535 := 0;
+	signal i_ioctl_addr : integer range 0 to 65535 := 0;
 	signal prev_clk : std_logic;
 	signal statusReg : std_logic_vector(7 downto 0) := (others => '0'); 
 	signal n_int_internal   : std_logic := '1';
@@ -98,8 +99,9 @@ architecture rtl of bufferedUART is
 	
 begin
 
+		i_ioctl_addr <= to_integer(unsigned(ioctl_addr));
 		dataOut <= fileOut when loadFrom = '0' else uartOut;
-		statusReg(0) <= '0' when loadFrom = '0' and to_integer(unsigned(ioctl_addr)) = i_outCounter 
+		statusReg(0) <= '0' when loadFrom = '0' and i_ioctl_addr = i_outCounter 
 							else '0' when loadFrom = '1' and rxInPointer=rxReadPointer else '1';
 		statusReg(1) <=  '0' when loadFrom = '0' else
 						     '1' when loadFrom = '1' and txByteWritten=txByteSent else '0';
@@ -109,7 +111,7 @@ begin
 		  
 		-- interrupt mask
 		n_int <= n_int_internal;
-		n_int_internal <= '0' when loadFrom = '0' and (to_integer(unsigned(ioctl_addr)) /= i_outCounter) and in_dl = '1' 
+		n_int_internal <= '0' when loadFrom = '0' and (i_ioctl_addr /= i_outCounter) and in_dl = '1' 
 				else '0' when loadFrom = '1' and (rxInPointer /= rxReadPointer) and controlReg(7)='1'
 	         else '0' when loadFrom = '1' and (txByteWritten=txByteSent) and controlReg(6)='0' and controlReg(5)='1'
 				else '1';
@@ -146,12 +148,12 @@ begin
 					 end if;
 			
 					if ioctl_download = '1' then
-						ascii_data(to_integer(unsigned(ioctl_addr))) <= ioctl_data;
-						i_ascii_last_byte <= to_integer(unsigned(ioctl_addr));
+						ascii_data(i_ioctl_addr) <= ioctl_data;
+						i_ascii_last_byte <= i_ioctl_addr;
 						i_outCounter <= 0;
 						in_dl <= '1';
 					else
-						if in_dl = '1' and i_outCounter > to_integer(unsigned(ioctl_addr)) then
+						if in_dl = '1' and i_outCounter > i_ioctl_addr then
 							in_dl<= '0';
 						end if;
 					end if;
