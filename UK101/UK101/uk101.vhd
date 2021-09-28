@@ -41,7 +41,13 @@ entity uk101 is
 		hblank		:	out std_logic;
 		vblank		:	out std_logic;
 		ps2Clk		: in std_logic;
-		ps2Data		: in std_logic
+		ps2Data		: in std_logic;
+		led			: out std_logic;
+		loadFrom			: in std_logic;
+	   ioctl_download : in std_logic;
+		ioctl_wr : in std_logic;
+		ioctl_data : in std_logic_vector(7 downto 0);
+      ioctl_addr  : in std_logic_vector(15 downto 0)
 	);
 end uk101;
 
@@ -65,6 +71,7 @@ architecture struct of uk101 is
 	signal n_monitorRomCS : std_logic;
 	signal n_aciaCS		: std_logic;
 	signal n_kbCS			: std_logic;
+	signal n_iocs			: std_logic;
 	
 	signal dispAddrB 		: std_logic_vector(9 downto 0);
 	signal dispRamDataOutA : std_logic_vector(7 downto 0);
@@ -89,10 +96,15 @@ architecture struct of uk101 is
 	
 	signal serialClkCount1: integer := 0;
 	signal serialClkCount2: integer := 0;
+	signal latchedbits : std_logic_vector(7 downto 0);
+	signal ascii_data_ready : std_logic;
+	signal outbit : std_logic;
 	
 
 
 begin
+
+   led <= latchedbits(0);
 
 	serialClkCount1 <= c_9600BaudClkCount1 when baud_rate = '0' else c_300BaudClkCount1;
 	serialClkCount2 <= c_9600BaudClkCount2 when baud_rate = '0' else c_300BaudClkCount2;
@@ -102,7 +114,8 @@ begin
 	n_dispRamCS <= '0' when cpuAddress(15 downto 10) = "110100" else '1';
 	n_basRomCS <= '0' when cpuAddress(15 downto 13) = "101" else '1'; --8k
 	n_monitorRomCS <= '0' when cpuAddress(15 downto 11) = "11111" else '1'; --2K
-	n_ramCS <= not(n_dispRamCS and n_basRomCS and n_monitorRomCS and n_aciaCS and n_kbCS);
+	n_iocs <= '0' when cpuAddress(15 downto 0 ) = "1101010000000000" else '1'; 
+	n_ramCS <= not(n_dispRamCS and n_basRomCS and n_monitorRomCS and n_aciaCS and n_kbCS and n_iocs);
 	n_aciaCS <= '0' when cpuAddress(15 downto 1) = "111100000000000" else '1';
 	n_kbCS <= '0' when cpuAddress(15 downto 10) = "110111" else '1';
  
@@ -181,6 +194,8 @@ begin
 
 	u5: entity work.bufferedUART
 	port map(
+		clk => clk,
+		rst => not n_reset,
 		n_wr => n_aciaCS or cpuClock or n_WR,
 		n_rd => n_aciaCS or cpuClock or (not n_WR),
 		regSel => cpuAddress(0),
@@ -192,7 +207,14 @@ begin
 		txd => txd,
 		n_cts => '0',
 		n_dcd => '0',
-		n_rts => rts
+		n_rts => rts,
+		ioctl_download => ioctl_download,
+	   ioctl_data => ioctl_data,
+		ioctl_addr => ioctl_addr,
+		ioctl_wr => ioctl_wr,
+      data_ready => ascii_data_ready,
+		loadFrom => loadFrom
+	
 	);
 
 	process (clk)
@@ -275,6 +297,15 @@ begin
 		KEYB	=> kbReadData
 	);
 	
+	UserLed	:	entity work.OutLatch
+	port map (
+		dataIn	=> cpuDataOut,
+		clock		=> clk,
+		load		=> n_iocs,
+		clear		=> n_reset,
+		latchOut	=> latchedbits
+	);
+--	
 	process (n_kbCS,n_memWR)
 	begin
 		if	n_kbCS='0' and n_memWR = '0' then
