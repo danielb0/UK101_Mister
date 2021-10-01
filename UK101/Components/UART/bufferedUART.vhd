@@ -131,14 +131,7 @@ begin
 	begin
 	if loadFrom = '0' then
 		if rising_edge (clk) then
-		
-				if rst = '1' then
-					i_ascii_last_byte <= 0;
-					i_outCounter <= 0;
-					ascii_rdy <= '0';
-					prev_clk <= '0';
-					in_dl <= '0';
-				else				
+					
 					if prev_clk = '1' and n_rd = '0' then
 							if ascii_rdy = '0' and w_data_ready = '1' and i_outCounter <= i_ascii_last_byte then
 										ascii <= ascii_data(i_outCounter)(7 downto 0);
@@ -169,8 +162,6 @@ begin
 									fileout<= statusReg;
 						end if;
 					end if;
-				end if;
-
 				prev_clk <= n_rd;
 		end if;
 		
