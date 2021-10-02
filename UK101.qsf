@@ -88,7 +88,6 @@ source sys/sys.tcl
 source sys/sys_analog.tcl
 source files.qip
 set_global_assignment -name FLOW_ENABLE_RTL_VIEWER ON
-set_global_assignment -name VHDL_FILE UK101/UK101/outlatch.vhd
 set_global_assignment -name VHDL_FILE UK101/Components/TV/UK101TextDisplay.vhd
 set_global_assignment -name VHDL_FILE UK101/Components/UART/bufferedUART.vhd
 set_global_assignment -name VHDL_FILE UK101/Components/PS2KB/UK101keyboard.vhd

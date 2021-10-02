@@ -23,7 +23,6 @@ library ieee;
 entity bufferedUART is
 	port (
 		clk		:	in std_logic;
-		rst		:	in std_logic;
 		n_wr    : in  std_logic;
 		n_rd    : in  std_logic;
 		regSel  : in  std_logic;
