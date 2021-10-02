@@ -40,7 +40,6 @@ entity bufferedUART is
 		ioctl_wr : in std_logic;
 		ioctl_data : in std_logic_vector(7 downto 0);
       ioctl_addr :  in std_logic_vector(15 downto 0);
-      data_ready : out std_logic;
 		loadFrom : in std_logic
 
    );
@@ -116,7 +115,6 @@ begin
 				else '1';
 	
 	    w_data_ready <= (in_dl and (not ioctl_download)) when loadFrom = '0' else '1';
-		 data_ready <= w_data_ready;
 		 
 		 -- raise (inhibit) n_rts when buffer over half-full
 		--	6850 implementatit = n_rts <= '1' when controlReg(6)='1' and controlReg(5)='0' else '0';

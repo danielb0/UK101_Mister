@@ -70,7 +70,6 @@ architecture struct of uk101 is
 	signal n_monitorRomCS : std_logic;
 	signal n_aciaCS		: std_logic;
 	signal n_kbCS			: std_logic;
-	signal n_iocs			: std_logic;
 	
 	signal dispAddrB 		: std_logic_vector(9 downto 0);
 	signal dispRamDataOutA : std_logic_vector(7 downto 0);
@@ -95,10 +94,7 @@ architecture struct of uk101 is
 	
 	signal serialClkCount1: integer := 0;
 	signal serialClkCount2: integer := 0;
-	signal latchedbits : std_logic_vector(7 downto 0);
-	signal ascii_data_ready : std_logic;
-	signal outbit : std_logic;
-	
+
 
 
 begin
@@ -208,7 +204,6 @@ begin
 	   ioctl_data => ioctl_data,
 		ioctl_addr => ioctl_addr,
 		ioctl_wr => ioctl_wr,
-      data_ready => ascii_data_ready,
 		loadFrom => loadFrom
 	
 	);
