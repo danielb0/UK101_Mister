@@ -264,7 +264,9 @@ wire CE_PIX;
 wire freeze_sync;
 reg [2:0] count = 0;
 
-reg ce_pix_count = resolution ? 3 : 5;
+wire [2:0] ce_pix_count;
+
+assign ce_pix_count = resolution ? 3 : 5;
 
 always @(posedge clk_sys) begin
 	if (count == ce_pix_count)
