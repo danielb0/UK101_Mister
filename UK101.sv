@@ -179,7 +179,7 @@ localparam CONF_STR = {
 	"OCD,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%;",
 	"OFG,Scale,Normal,V-Integer,Narrower HV-Integer,Wider HV-Integer;",
 	//"O34,Colours,White on blue,White on black,Green on black,Yellow on black;",
-	"O55,Screen size,48x16,64x32;",
+	"D3O55,Screen size,48x16,64x32;",
 	"O66,Monitor,Cegmon,MonUK02(NewMon);",
 	"O77,Baud Rate,9600,300;",
 	"RA,Reset;",
@@ -223,7 +223,7 @@ hps_io #(.CONF_STR(CONF_STR),.PS2DIV(2000)) hps_io
 	.ps2_kbd_clk_out(PS2_CLK),
 	.ps2_kbd_data_out(PS2_DAT),
 	.forced_scandoubler(forced_scandoubler),
-	.status_menumask({status[3],status[6]}),
+	.status_menumask(status[6:3]),
 	.gamma_bus(gamma_bus),
 	
 	.ioctl_download(ioctl_download),

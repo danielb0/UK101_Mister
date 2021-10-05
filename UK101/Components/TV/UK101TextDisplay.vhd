@@ -63,6 +63,9 @@ architecture rtl of UK101TextDisplay is
 	signal	charHoriz: STD_LOGIC_VECTOR(5 DOWNTO 0); 
 	signal	charBit: STD_LOGIC_VECTOR(3 DOWNTO 0); 
 	signal	charHeight: STD_LOGIC_VECTOR(3 DOWNTO 0); 
+	signal	leftborder: STD_LOGIC_VECTOR(11 DOWNTO 0); 
+	signal	rightBorder: STD_LOGIC_VECTOR(11 DOWNTO 0); 
+
 
 begin
 
@@ -80,6 +83,9 @@ begin
 	dispAddr <= charVert & charHoriz;
 	charAddr <= dispData & charScanLine(3 DOWNTO 1) when resolution = '0' else dispData & charScanLine(2 downto 0);
 	charHeight(3 downto 0)<= "1111" when resolution = '0' else "0111";
+	--leftBorder <= 7 if resolution = '0' else 
+	rightBorder <= X"1F4" when resolution = '0' else X"206";
+	
 	
 	PROCESS (clk)
 	BEGIN
@@ -99,7 +105,7 @@ begin
 			IF horizCount < 534 THEN
 				horizCount <= horizCount + 1;
 --				if (horizCount < 600) or (horizCount > 3000) then
-				if (horizCount < 7) or (horizCount > 500) then
+				if (horizCount < 7) or (horizCount > rightBorder) then
 					hActive <= '0';
 					charHoriz <= (others => '0');
 				else
