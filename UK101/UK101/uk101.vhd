@@ -215,16 +215,29 @@ begin
 	process (clk)
 	begin
 		if rising_edge(clk) then
-			if divisor2 = 0 then
-				cpuClock <= not cpuClock;
-			
-				case cpuOverclock is
-					when '1' => divisor2 <= 24;  --   1x speed
-					when '0' => divisor2 <= 6;
-				end case;
-			else
-				divisor2 <= divisor2 - 1;
-			end if;
+        if cpuOverclock = '0' then -- 1MHz CPU clock
+            if cpuClkCount < 49 then
+                cpuClkCount <= cpuClkCount + 1;
+            else
+                cpuClkCount <= (others=>'0');
+            end if;
+            if cpuClkCount < 25 then
+                cpuClock <= '0';
+            else
+                cpuClock <= '1';
+            end if;
+        else
+            if cpuClkCount < 4 then -- 4 = 10MHz, 3 = 12.5MHz, 2=16.6MHz, 1=25MHz
+                cpuClkCount <= cpuClkCount + 1;
+            else
+                cpuClkCount <= (others=>'0');
+            end if;
+            if cpuClkCount < 2 then -- 2 when 10MHz, 2 when 12.5MHz, 2 when 16.6MHz, 1 when 25MHz
+                cpuClock <= '0';
+            else
+                cpuClock <= '1';
+            end if;
+        end if;
 				
 
 			
