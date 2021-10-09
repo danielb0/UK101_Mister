@@ -185,7 +185,7 @@ localparam CONF_STR = {
 	"O66,Monitor,Cegmon,MonUK02(NewMon);",
 	"-;",
 	"O77,Baud Rate,9600,300;",
-	"OAA,Clock speed,1Mhz,2Mhz;",
+	"OBD,Clock speed,1Mhz,2Mhz,4Mhz,8Mhz,10Mhz;",
 	"-;",
 	"RA,Reset;",
 	"-;",
@@ -206,7 +206,6 @@ wire loadFrom = status[3];
 wire resolution;
 wire monitor_type=status[6];
 wire baud_rate=status[7];
-wire clock_speed = status[10];
 assign resolution = monitor_type ? 0 : status[5];
 wire forced_scandoubler;
 wire [21:0] gamma_bus;
@@ -299,7 +298,7 @@ uk101 uk101
 (
 	.n_reset(~reset),
 	.clk (clk_sys),
-	.cpuOverclock(clock_speed),
+	.cpuOverclock(status[13:11]),
 	.video_clock(CLK_VIDEO),
 	.ps2Clk(PS2_CLK),
 	.ps2Data(PS2_DAT),

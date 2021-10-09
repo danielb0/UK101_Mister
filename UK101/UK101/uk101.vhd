@@ -14,16 +14,16 @@
 -- eMail address available on my main web page link above.
 
 library ieee;
-use ieee.std_logic_1164.all;
-use  IEEE.STD_LOGIC_ARITH.all;
-use  IEEE.STD_LOGIC_UNSIGNED.all;
+	use ieee.std_logic_1164.all;
+	use ieee.numeric_std.all;
+	use ieee.std_logic_unsigned.all;
 
 entity uk101 is
 	port(
 		n_reset		: in std_logic;
 		clk			: in std_logic;
 		video_clock	: in std_logic; 
-		cpuOverclock	: in std_logic;
+		cpuOverclock	: in std_logic_vector(2 downto 0);
 		ce_pix	: in std_logic; 	
 		rxd			: in std_logic;
 		txd			: out std_logic;
@@ -97,6 +97,7 @@ architecture struct of uk101 is
 	signal serialClkCount2: integer := 0;
 	signal divisor1 : integer range 0 to 50 := 0;
 	signal divisor2 : integer range 0 to 25 := 0;
+	signal i_cpuOverclock : integer range 0 to 5 := 0;
 
 
 
@@ -105,6 +106,8 @@ begin
 
 	serialClkCount1 <= c_9600BaudClkCount1 when baud_rate = '0' else c_300BaudClkCount1;
 	serialClkCount2 <= c_9600BaudClkCount2 when baud_rate = '0' else c_300BaudClkCount2;
+	
+	i_cpuOverclock <= to_integer(unsigned(cpuOverclock));
 	
 	n_memWR <= not(cpuClock) nand (not n_WR);
 
@@ -214,7 +217,7 @@ begin
 	process (clk)
 	begin
 		if rising_edge(clk) then
-        if cpuOverclock = '0' then -- 1MHz CPU clock
+        if i_cpuOverclock = 0 then -- 1MHz CPU clock
             if cpuClkCount < 49 then
                 cpuClkCount <= cpuClkCount + 1;
             else
@@ -225,18 +228,51 @@ begin
             else
                 cpuClock <= '1';
             end if;
-        else
-            if cpuClkCount < 4 then -- 4 = 10MHz, 3 = 12.5MHz, 2=16.6MHz, 1=25MHz
-                cpuClkCount <= cpuClkCount + 1;
+        elsif i_cpuOverclock = 1 then --2mhz
+		  if cpuClkCount < 23 then 					  -- 24 = 2.08Mhz 12 = 4.14Mhz 5 = 8.3 Mhz 4 = 10MHz, 3 = 12.5MHz, 2=16.6MHz, 1=25MHz
+					cpuClkCount <= cpuClkCount + 1;
             else
                 cpuClkCount <= (others=>'0');
             end if;
-            if cpuClkCount < 2 then -- 2 when 10MHz, 2 when 12.5MHz, 2 when 16.6MHz, 1 when 25MHz
+            if cpuClkCount < 12 then -- 				2 when 10MHz, 2 when 12.5MHz, 2 when 16.6MHz, 1 when 25MHz
                 cpuClock <= '0';
             else
                 cpuClock <= '1';
             end if;
+		elsif i_cpuOverclock = 2 then --4mhz
+		  if cpuClkCount < 11 then 					  
+                cpuClkCount <= cpuClkCount + 1;
+            else
+                cpuClkCount <= (others=>'0');
+            end if;
+            if cpuClkCount < 6 then -- 			
+                cpuClock <= '0';
+            else
+                cpuClock <= '1';
+            end if;	
+		elsif i_cpuOverclock = 3 then --8mhz
+		  if cpuClkCount < 5 then 					 
+                cpuClkCount <= cpuClkCount + 1;
+            else
+                cpuClkCount <= (others=>'0');
+            end if;
+            if cpuClkCount < 3 then -- 			
+                cpuClock <= '0';
+            else
+                cpuClock <= '1';
+            end if;
+		elsif i_cpuOverclock = 4 then  --10mhz
+		  if cpuClkCount < 4 then 					  
+                cpuClkCount <= cpuClkCount + 1;
+            else
+                cpuClkCount <= (others=>'0');
+            end if;
+            if cpuClkCount < 2 then -- 			
+                cpuClock <= '0';
+            else
+                cpuClock <= '1';
         end if;
+	 end if;
 				
 
 			
