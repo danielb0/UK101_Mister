@@ -23,6 +23,7 @@ entity uk101 is
 		n_reset		: in std_logic;
 		clk			: in std_logic;
 		video_clock	: in std_logic; 
+		cpuOverclock	: in std_logic;
 		ce_pix	: in std_logic; 	
 		rxd			: in std_logic;
 		txd			: out std_logic;
@@ -94,6 +95,8 @@ architecture struct of uk101 is
 	
 	signal serialClkCount1: integer := 0;
 	signal serialClkCount2: integer := 0;
+	signal divisor1 : integer range 0 to 50 := 0;
+	signal divisor2 : integer range 0 to 25 := 0;
 
 
 
@@ -102,7 +105,7 @@ begin
 
 	serialClkCount1 <= c_9600BaudClkCount1 when baud_rate = '0' else c_300BaudClkCount1;
 	serialClkCount2 <= c_9600BaudClkCount2 when baud_rate = '0' else c_300BaudClkCount2;
-
+	
 	n_memWR <= not(cpuClock) nand (not n_WR);
 
 	n_dispRamCS <= '0' when cpuAddress(15 downto 11) = "11010" and resolution = '1' else 
@@ -212,16 +215,18 @@ begin
 	process (clk)
 	begin
 		if rising_edge(clk) then
-			if cpuClkCount < 49 then
-				cpuClkCount <= cpuClkCount + 1;
+			if divisor2 = 0 then
+				cpuClock <= not cpuClock;
+			
+				case cpuOverclock is
+					when '1' => divisor2 <= 24;  --   1x speed
+					when '0' => divisor2 <= 6;
+				end case;
 			else
-				cpuClkCount <= (others=>'0');
+				divisor2 <= divisor2 - 1;
 			end if;
-			if cpuClkCount < 25 then
-				cpuClock <= '0';
-			else
-				cpuClock <= '1';
-			end if;	
+				
+
 			
 			if serialClkCount < serialClkCount1 then
 				serialClkCount <= serialClkCount + 1;

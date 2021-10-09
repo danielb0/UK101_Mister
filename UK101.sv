@@ -185,6 +185,7 @@ localparam CONF_STR = {
 	"O66,Monitor,Cegmon,MonUK02(NewMon);",
 	"-;",
 	"O77,Baud Rate,9600,300;",
+	"OAA,Clock speed,1Mhz,2Mhz;",
 	"-;",
 	"RA,Reset;",
 	"-;",
@@ -205,6 +206,7 @@ wire loadFrom = status[3];
 wire resolution;
 wire monitor_type=status[6];
 wire baud_rate=status[7];
+wire clock_speed = status[10];
 assign resolution = monitor_type ? 0 : status[5];
 wire forced_scandoubler;
 wire [21:0] gamma_bus;
@@ -245,11 +247,13 @@ wire clk_sys, locked;
 wire clk_VIDEO;
 wire pll_clk_video;
 
+
 pll pll
 (
 	.refclk(CLK_50M),
 	.rst(0),
-	.outclk_0(clk_sys), // 50M
+	.outclk_0(clk_sys), // 48M
+
 	.locked(locked)
 );
 
@@ -295,6 +299,7 @@ uk101 uk101
 (
 	.n_reset(~reset),
 	.clk (clk_sys),
+	.cpuOverclock(clock_speed),
 	.video_clock(CLK_VIDEO),
 	.ps2Clk(PS2_CLK),
 	.ps2Data(PS2_DAT),
