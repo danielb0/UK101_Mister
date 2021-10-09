@@ -213,84 +213,7 @@ begin
 		loadFrom => loadFrom
 	
 	);
-
-	process (clk)
-	begin
-		if rising_edge(clk) then
-        if i_cpuOverclock = 0 then -- 1MHz CPU clock
-            if cpuClkCount < 49 then
-                cpuClkCount <= cpuClkCount + 1;
-            else
-                cpuClkCount <= (others=>'0');
-            end if;
-            if cpuClkCount < 25 then
-                cpuClock <= '0';
-            else
-                cpuClock <= '1';
-            end if;
-        elsif i_cpuOverclock = 1 then --2mhz
-		  if cpuClkCount < 23 then 					  -- 24 = 2.08Mhz 12 = 4.14Mhz 5 = 8.3 Mhz 4 = 10MHz, 3 = 12.5MHz, 2=16.6MHz, 1=25MHz
-					cpuClkCount <= cpuClkCount + 1;
-            else
-                cpuClkCount <= (others=>'0');
-            end if;
-            if cpuClkCount < 12 then -- 				2 when 10MHz, 2 when 12.5MHz, 2 when 16.6MHz, 1 when 25MHz
-                cpuClock <= '0';
-            else
-                cpuClock <= '1';
-            end if;
-		elsif i_cpuOverclock = 2 then --4mhz
-		  if cpuClkCount < 11 then 					  
-                cpuClkCount <= cpuClkCount + 1;
-            else
-                cpuClkCount <= (others=>'0');
-            end if;
-            if cpuClkCount < 6 then -- 			
-                cpuClock <= '0';
-            else
-                cpuClock <= '1';
-            end if;	
-		elsif i_cpuOverclock = 3 then --8mhz
-		  if cpuClkCount < 5 then 					 
-                cpuClkCount <= cpuClkCount + 1;
-            else
-                cpuClkCount <= (others=>'0');
-            end if;
-            if cpuClkCount < 3 then -- 			
-                cpuClock <= '0';
-            else
-                cpuClock <= '1';
-            end if;
-		elsif i_cpuOverclock = 4 then  --10mhz
-		  if cpuClkCount < 4 then 					  
-                cpuClkCount <= cpuClkCount + 1;
-            else
-                cpuClkCount <= (others=>'0');
-            end if;
-            if cpuClkCount < 2 then -- 			
-                cpuClock <= '0';
-            else
-                cpuClock <= '1';
-        end if;
-	 end if;
-				
-
-			
-			if serialClkCount < serialClkCount1 then
-				serialClkCount <= serialClkCount + 1;
-			else
-				serialClkCount <= (others => '0');
-			end if;
-
-			if serialClkCount < serialClkCount2 then 
-				serialClock <= '0';
-			else
-				serialClock <= '1';
-			end if;	
-		end if;
-	end process;
 	
-
 	u6 : entity work.UK101TextDisplay
 	port map (
 		charAddr => charAddr,
@@ -310,6 +233,81 @@ begin
 		g => g,
 		b => b
 	);
+
+	process (clk)
+	begin
+		if rising_edge(clk) then
+        if i_cpuOverclock = 0 then -- 1MHz CPU clock
+            if cpuClkCount < 49 then
+                cpuClkCount <= cpuClkCount + 1;
+            else
+                cpuClkCount <= (others=>'0');
+            end if;
+            if cpuClkCount < 25 then
+                cpuClock <= '0';
+            else
+                cpuClock <= '1';
+            end if;
+        elsif i_cpuOverclock = 1 then --2mhz
+			if cpuClkCount < 23 then 					  -- 24 = 2.08Mhz 12 = 4.14Mhz 5 = 8.3 Mhz 4 = 10MHz, 3 = 12.5MHz, 2=16.6MHz, 1=25MHz
+					cpuClkCount <= cpuClkCount + 1;
+            else
+                cpuClkCount <= (others=>'0');
+            end if;
+            if cpuClkCount < 12 then -- 				2 when 10MHz, 2 when 12.5MHz, 2 when 16.6MHz, 1 when 25MHz
+                cpuClock <= '0';
+            else
+                cpuClock <= '1';
+            end if;
+			elsif i_cpuOverclock = 2 then --4mhz
+				if cpuClkCount < 11 then 					  
+                cpuClkCount <= cpuClkCount + 1;
+            else
+                cpuClkCount <= (others=>'0');
+            end if;
+            if cpuClkCount < 6 then -- 			
+                cpuClock <= '0';
+            else
+                cpuClock <= '1';
+            end if;	
+			elsif i_cpuOverclock = 3 then --8mhz
+				if cpuClkCount < 5 then 					 
+                cpuClkCount <= cpuClkCount + 1;
+            else
+                cpuClkCount <= (others=>'0');
+            end if;
+            if cpuClkCount < 3 then -- 			
+                cpuClock <= '0';
+            else
+                cpuClock <= '1';
+            end if;
+			elsif i_cpuOverclock = 4 then  --10mhz
+				if cpuClkCount < 4 then 					  
+                cpuClkCount <= cpuClkCount + 1;
+            else
+                cpuClkCount <= (others=>'0');
+            end if;
+            if cpuClkCount < 2 then -- 			
+                cpuClock <= '0';
+            else
+                cpuClock <= '1';
+        end if;
+	 end if;
+							
+			if serialClkCount < serialClkCount1 then
+				serialClkCount <= serialClkCount + 1;
+			else
+				serialClkCount <= (others => '0');
+			end if;
+
+			if serialClkCount < serialClkCount2 then 
+				serialClock <= '0';
+			else
+				serialClock <= '1';
+			end if;	
+		end if;
+	end process;
+	
 
 	u7: entity work.CharRom
 	port map
