@@ -128,7 +128,13 @@ begin
 	n_kbCS <= '0' when cpuAddress(15 downto 10) = "110111" else '1';
  
 	cpuDataIn <=
-		    -- CEGMON PATCH FOR 64x32 SCREEN
+		    -- CEGMON PATCH TO CORRECT AUTO-REPEAT IN FAST MODE
+		x"A0" when cpuAddress = "1111110011100000" and i_cpuOverclock = 4 else -- Address = FCE0 and fastMode = 1 : CHANGE REPEAT RATE LOOP VALUE (was $10)
+		x"80" when cpuAddress = "1111110011100000" and i_cpuOverclock = 3 else 
+		x"40" when cpuAddress = "1111110011100000" and i_cpuOverclock = 2 else 	
+		x"20" when cpuAddress = "1111110011100000" and i_cpuOverclock = 1 else 	
+		x"10" when cpuAddress = "1111110011100000" and i_cpuOverclock = 0 else 		
+		-- CEGMON PATCH FOR 64x32 SCREEN
 		x"3F" when cpuAddress = x"FBBC" and resolution='1' and monitor_type = '0' else -- CEGMON SWIDTH (was $47)
 		x"00" when cpuAddress = x"FBBD" and resolution='1' and monitor_type = '0' else -- CEGMON TOP L (was $0C (1st line) or $8C (3rd line))
 		x"BF" when cpuAddress = x"FBBF" and resolution='1' and monitor_type = '0' else -- CEGMON BASE L (was $CC)
