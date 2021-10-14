@@ -38,6 +38,7 @@ entity uk101 is
 		resolution	:	in std_logic;
 		--colours		:	in std_logic_vector(1 downto 0);
 		monitor_type : in std_logic;
+		machine_type	: in std_logic;
 		baud_rate : in std_logic;
 		hblank		:	out std_logic;
 		vblank		:	out std_logic;

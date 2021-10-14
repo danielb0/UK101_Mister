@@ -22,7 +22,7 @@ library ieee;
 entity UK101TextDisplay is
 	port (
 		charAddr : out std_LOGIC_VECTOR(10 downto 0);
-		charData : in std_LOGIC_VECTOR(7 downto 0);
+		charData : in std_LOGIC_VECTOR(0 to 7);
 		dispAddr : out std_LOGIC_VECTOR(10 downto 0);
 		dispData : in std_LOGIC_VECTOR(7 downto 0);
 		clk    	: in  std_logic;

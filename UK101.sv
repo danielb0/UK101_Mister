@@ -186,6 +186,7 @@ localparam CONF_STR = {
 	"-;",
 	"O77,Baud Rate,9600,300;",
 	"OHJ,Clock speed,1Mhz,2Mhz,4Mhz,8Mhz,10Mhz;",
+	"OKK,Machine,UK101,SuperboardII;",
 	"-;",
 	"RA,Reset;",
 	"-;",
@@ -206,6 +207,7 @@ wire loadFrom = status[3];
 wire resolution;
 wire monitor_type=status[6];
 wire baud_rate=status[7];
+wire machine_type=status[20];
 assign resolution = monitor_type ? 0 : status[5];
 wire forced_scandoubler;
 wire [21:0] gamma_bus;
@@ -313,6 +315,7 @@ uk101 uk101
 	//.colours(colour_scheme),
 	.resolution(resolution),
 	.monitor_type(monitor_type),
+	.machine_type(machine_type),
 	.baud_rate(baud_rate),
 	.rxd(UART_RXD),
 	.txd(UART_TXD),
