@@ -22,7 +22,7 @@ library ieee;
 entity UK101TextDisplay is
 	port (
 		charAddr : out std_LOGIC_VECTOR(10 downto 0);
-		charData : in std_LOGIC_VECTOR(0 to 7);
+		charData : in std_LOGIC_VECTOR(7 downto 0);
 		dispAddr : out std_LOGIC_VECTOR(10 downto 0);
 		dispData : in std_LOGIC_VECTOR(7 downto 0);
 		clk    	: in  std_logic;
@@ -35,7 +35,8 @@ entity UK101TextDisplay is
 		hsync_out  	: out  std_logic;
 		vsync_out  	: out  std_logic;
 		hblank_out  	: out  std_logic;
-		vblank_out 	: out  std_logic
+		vblank_out 	: out  std_logic;
+		machine_type : in std_logic
    );
 end UK101TextDisplay;
 
@@ -64,6 +65,8 @@ architecture rtl of UK101TextDisplay is
 	signal	charBit: STD_LOGIC_VECTOR(3 DOWNTO 0); 
 	signal	charHeight: STD_LOGIC_VECTOR(3 DOWNTO 0); 
 	signal	rightBorder: STD_LOGIC_VECTOR(11 DOWNTO 0); 
+	signal 	charIn : std_LOGIC_VECTOR(7 downto 0);
+	signal 	chartemp : std_LOGIC_VECTOR(7 downto 0);
 
 
 begin
@@ -80,9 +83,15 @@ begin
 	sync <= hSync and vSync;
 	
 	dispAddr <= charVert & charHoriz;
-	charAddr <= dispData & charScanLine(2 downto 0);
-	charHeight(3 downto 0)<= "0111";
-	rightBorder <= X"206";
+	charAddr <= dispData & charScanLine(3 DOWNTO 1) when resolution = '0' and machine_type = '0'
+					else dispData & charScanLine(2 downto 0);
+	charHeight(3 downto 0)<= "1111" when resolution = '0' and machine_type= '0' else "0111";
+	rightBorder <= X"1F4" when resolution = '0' and machine_type = '0' else X"206";
+	
+	--charIn <= charData(7 downto 0) when machine_type = '0' else charData(0 to 7);
+	gen: for i in 0 to 7 generate
+		charIn(i) <= charData(i) when machine_type='0' else charData(7-i);
+	end generate;
 	
 	
 	PROCESS (clk)
@@ -150,7 +159,7 @@ begin
 			end if;
 			
 			if hActive='1' and vActive = '1' then
-					video <= charData(7-to_integer(unsigned(pixelCount)));
+					video <= charIn(7-to_integer(unsigned(pixelCount)));
 					if pixelCount = 7 then
 						charHoriz <= charHoriz+1;
 					end if;
