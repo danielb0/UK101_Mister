@@ -275,7 +275,7 @@ reg [2:0] count = 0;
 
 wire [2:0] ce_pix_count;
 
-assign ce_pix_count = resolution ? 3 : 5;
+assign ce_pix_count = resolution ? 3 : 4;
 
 always @(posedge clk_sys) begin
 	if (count == ce_pix_count)
