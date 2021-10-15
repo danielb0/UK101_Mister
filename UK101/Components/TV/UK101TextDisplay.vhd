@@ -82,7 +82,7 @@ begin
 	dispAddr <= charVert & charHoriz;
 	charAddr <= dispData & charScanLine(2 downto 0);
 	charHeight(3 downto 0)<= "0111";
-	rightBorder <= X"1F4" when resolution = '0' else X"206";
+	rightBorder <= X"206";
 	
 	
 	PROCESS (clk)
