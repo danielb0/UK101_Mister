@@ -275,20 +275,20 @@ reg [2:0] count = 0;
 
 wire [2:0] ce_pix_count;
 
-//assign ce_pix_count = resolution ? 3 : 4;
+assign ce_pix_count = 7;
 
-always_comb
-begin
-	if (machine_type == 1'b0)
-	begin
-		if (resolution == 1'b0)
-			ce_pix_count = 5;
-		else
-			ce_pix_count = 3;
-	end
-	else
-		ce_pix_count = 4;
-end
+//always_comb
+//begin
+//	if (machine_type == 1'b0)
+//	begin
+//		if (resolution == 1'b0)
+//			ce_pix_count = 5;
+//		else
+//			ce_pix_count = 3;
+//	end
+//	else
+//		ce_pix_count = 5;
+//end
 
 
 	

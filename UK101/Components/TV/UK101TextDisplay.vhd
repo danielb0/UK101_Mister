@@ -86,7 +86,7 @@ begin
 	charAddr <= dispData & charScanLine(3 DOWNTO 1) when resolution = '0' and machine_type = '0'
 					else dispData & charScanLine(2 downto 0);
 	charHeight(3 downto 0)<= "1111" when resolution = '0' and machine_type= '0' else "0111";
-	rightBorder <= X"1F4" when resolution = '0' and machine_type = '0' else X"206";
+	rightBorder <= X"106";
 	
 	--charIn <= charData(7 downto 0) when machine_type = '0' else charData(0 to 7);
 	gen: for i in 0 to 7 generate
@@ -109,7 +109,7 @@ begin
 -- 4.7us horiz sync (235 clocks)
 		if rising_edge(clk) then
 		  if ce_pix = '1' then
-			IF horizCount < 534 THEN
+			IF horizCount < 270 THEN
 				horizCount <= horizCount + 1;
 --				if (horizCount < 600) or (horizCount > 3000) then
 				if (horizCount < 7) or (horizCount > rightBorder) then
