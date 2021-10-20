@@ -153,6 +153,7 @@ begin
 		x"D7" when cpuAddress = x"FE3B" and resolution='1' and monitor_type = '0' and machine_type = '0' else -- CEGMON SCREEN BOTTOM H - 1 (was $D3) - Part of CTRL-A code
 		
 		x"2F" when cpuAddress = x"FBBC" and resolution='0' and monitor_type = '0' and machine_type = '0' else -- CEGMON SWIDTH (was $47)
+		x"1F" when cpuAddress = x"FBBC" and resolution='0' and monitor_type = '0' and machine_type = '1' else -- CEGMON SWIDTH (was $47)
 		x"00" when cpuAddress = x"FBBD" and resolution='0' and monitor_type = '0' and machine_type = '0' else -- CEGMON TOP L (was $0C (1st line) or $8C (3rd line))
 		x"85" when cpuAddress = x"FBBF" and resolution='0' and monitor_type = '0' and machine_type = '0' else -- CEGMON BASE L (was $CC)
 		x"D3" when cpuAddress = x"FBC0" and resolution='0' and monitor_type = '0' and machine_type = '0' else -- CEGMON BASE H (was $D3)
@@ -259,6 +260,7 @@ begin
 		vblank_out => vblank,
 		--colours => colours,
 		resolution => resolution,
+		monitor_type => monitor_type,
 		machine_type => machine_type,
 		--monitor_type => monitor_type,
 		r => r,
