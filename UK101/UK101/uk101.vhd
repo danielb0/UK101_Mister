@@ -63,6 +63,8 @@ architecture struct of uk101 is
 	signal basRomDataOSI		: std_logic_vector(7 downto 0);
 	signal ramDataOut		: std_logic_vector(7 downto 0);
 	signal monitorRomData : std_logic_vector(7 downto 0);
+	signal monUKRomData : std_logic_vector(7 downto 0);
+	signal cegmonOSIRomData : std_logic_vector(7 downto 0);
 	signal aciaData		: std_logic_vector(7 downto 0);
 
 	signal n_memWR			: std_logic;
@@ -79,6 +81,8 @@ architecture struct of uk101 is
 	signal dispRamDataOutB : std_logic_vector(7 downto 0);
 	signal charAddr 		: std_logic_vector(10 downto 0);
 	signal charData 		: std_logic_vector(7 downto 0);
+	signal charDataUK101 		: std_logic_vector(7 downto 0);
+	signal charDataOSI 		: std_logic_vector(7 downto 0);
 
 	signal serialClkCount: std_logic_vector(14 downto 0); 
 	signal cpuClkCount	: std_logic_vector(5 downto 0); 
@@ -119,6 +123,7 @@ begin
 	serialClkCount2 <= c_9600BaudClkCount2 when baud_rate = '0' else c_300BaudClkCount2;
 	
 	i_cpuOverclock <= to_integer(unsigned(cpuOverclock));
+	charData <= charDataUK101 when machine_type = '0' else charDataOSI;
 	
 	n_memWR <= not(cpuClock) nand (not n_WR);
 
@@ -132,6 +137,7 @@ begin
 	n_aciaCS <= '0' when cpuAddress(15 downto 1) = "111100000000000" and machine_type = '0' else
 					'0' when cpuAddress(15 downto 1) = "111111000000000" and machine_type = '1' else '1';
 	n_kbCS <= '0' when cpuAddress(15 downto 10) = "110111" else '1';
+
  
 	cpuDataIn <=
 		    -- CEGMON PATCH TO CORRECT AUTO-REPEAT IN FAST MODE
@@ -165,7 +171,9 @@ begin
 		x"D3" when cpuAddress = x"FE3B" and resolution='0' and monitor_type = '0' and machine_type = '0' else -- CEGMON SCREEN BOTTOM H - 1 (was $D3) - Part of CTRL-A code
 		basRomData when n_basRomCS = '0' and machine_type = '0' else
 		basRomDataOSI when n_basRomCS = '0' and machine_type = '1' else
-		monitorRomData when n_monitorRomCS = '0' else
+		monitorRomData when n_monitorRomCS = '0' and machine_type = '0' and monitor_type = '0' else
+		monUKRomData when n_monitorRomCS = '0' and machine_type = '0' and monitor_type = '1' else
+		cegmonOSIRomData when n_monitorRomCS = '0' and machine_type = '1' else
 		aciaData when n_aciaCS = '0' else
 		ramDataOut when n_ramCS = '0' else
 		dispRamDataOutA when n_dispRamCS = '0' else
@@ -218,9 +226,22 @@ begin
 	port map
 	(
 		address => cpuAddress(10 downto 0),
-		monitor_type => monitor_type,
-		machine_type => machine_type,
 		q => monitorRomData
+	);
+	
+	u11: entity work.MonUK02Rom
+	port map
+	(
+		address => cpuAddress(10 downto 0),
+		q => monUKRomData
+	);
+	
+	
+	u12: entity work.CegmonRomOSI
+	port map
+	(
+		address => cpuAddress(10 downto 0),
+		q => cegmonOSIRomData
 	);
 
 	u5: entity work.bufferedUART
@@ -303,8 +324,14 @@ begin
 	port map
 	(
 		address => charAddr,
-		q => charData,
-		machine_type => machine_type
+		q => charDataUK101
+	);
+	
+	u13: entity work.CharRomOSI
+	port map
+	(
+		address => charAddr,
+		q => charDataOSI
 	);
 
 	u8: entity work.DisplayRam 

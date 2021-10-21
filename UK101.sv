@@ -205,7 +205,7 @@ wire PS2_CLK;
 wire PS2_DAT;
 wire loadFrom = status[3];
 wire resolution;
-wire monitor_type=status[6];
+wire monitor_type=machine_type ? 0 : status[6];
 wire baud_rate=status[7];
 wire machine_type=status[20];
 assign resolution = monitor_type ? 0 : status[5];
