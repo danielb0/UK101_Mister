@@ -182,7 +182,7 @@ localparam CONF_STR = {
 	//"O34,Colours,White on blue,White on black,Green on black,Yellow on black;",
 	"D3O55,Screen resolution,Low,High;",
 	"-;",
-	"O66,Monitor,Cegmon,MonUK02/Synmon;",
+	"OLM,Monitor,Cegmon,MonUK02/Synmon,Wemon;",
 	"-;",
 	"O77,Baud Rate,9600,300;",
 	"OHJ,Clock speed,1Mhz,2Mhz,4Mhz,8Mhz,10Mhz;",
@@ -205,10 +205,10 @@ wire PS2_CLK;
 wire PS2_DAT;
 wire loadFrom = status[3];
 wire resolution;
-wire monitor_type=status[6];
+//wire [1:0]monitor_type=status[22:21];
 wire baud_rate=status[7];
 wire machine_type=status[20];
-assign resolution = monitor_type ? 0 : status[5];
+assign resolution = status[5];
 wire forced_scandoubler;
 wire [21:0] gamma_bus;
 
@@ -331,7 +331,7 @@ uk101 uk101
 	.vblank(vblank),
 	//.colours(colour_scheme),
 	.resolution(resolution),
-	.monitor_type(monitor_type),
+	.monitor_type(status[22:21]),
 	.machine_type(machine_type),
 	.baud_rate(baud_rate),
 	.rxd(UART_RXD),
