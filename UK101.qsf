@@ -90,6 +90,7 @@ source files.qip
 set_global_assignment -name FLOW_ENABLE_RTL_VIEWER ON
 set_global_assignment -name ENABLE_SIGNALTAP OFF
 set_global_assignment -name USE_SIGNALTAP_FILE stp1.stp
+set_global_assignment -name VHDL_FILE UK101/UK101/SynmonRom.VHD
 set_global_assignment -name VHDL_FILE UK101/UK101/CharRomOSI.VHD
 set_global_assignment -name VHDL_FILE UK101/UK101/CegmonRomOSI.VHD
 set_global_assignment -name QIP_FILE UK101/UK101/BasicRomOSI.qip

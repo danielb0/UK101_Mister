@@ -64,6 +64,7 @@ architecture struct of uk101 is
 	signal ramDataOut		: std_logic_vector(7 downto 0);
 	signal monitorRomData : std_logic_vector(7 downto 0);
 	signal monUKRomData : std_logic_vector(7 downto 0);
+	signal SynmonRomData : std_logic_vector(7 downto 0);
 	signal cegmonOSIRomData : std_logic_vector(7 downto 0);
 	signal aciaData		: std_logic_vector(7 downto 0);
 
@@ -130,8 +131,10 @@ begin
 	n_dispRamCS <= '0' when cpuAddress(15 downto 11) = "11010" else '1';
 	n_basRomCS <= '0' when cpuAddress(15 downto 13) = "101" else '1'; --8k
 	n_monitorRomCS	<= '0' when cpuAddress(15 downto 11) = "11111" and machine_type = '0' else
-						'0' when (cpuAddress(15 downto 11) = "11111" and cpuAddress(11 downto 8) /= "1100") and machine_type = '1' else		-- 2K      $F800-$FFFF  (except $FC00-$FCFF)  C2/C4
-					   '0' when cpuAddress(15 downto 8)  = "11110100" and machine_type = '1' else	   										-- 256byte $F400-$F4FF  (relocated FC00-FCFF block)
+						'0' when cpuAddress(15 downto 11) = "11111" and machine_type = '1' and monitor_type = '1'  else		-- 2K      $F800-$FFFF  (except $FC00-$FCFF)  C2/C4
+					   --'0' when cpuAddress(15 downto 8)  = "11110001" and machine_type = '1' and monitor_type = '1' else	  
+						'0' when (cpuAddress(15 downto 11) = "11111" and cpuAddress(11 downto 8) /= "1100") and machine_type = '1' and monitor_type = '0'  else		-- 2K      $F800-$FFFF  (except $FC00-$FCFF)  C2/C4
+					   '0' when cpuAddress(15 downto 8)  = "11110100" and machine_type = '1' and monitor_type = '0' else	   										-- 256byte $F400-$F4FF  (relocated FC00-FCFF block)
 					   '1';
 	n_ramCS <= not(n_dispRamCS and n_basRomCS and n_monitorRomCS and n_aciaCS and n_kbCS);
 	n_aciaCS <= '0' when cpuAddress(15 downto 1) = "111100000000000" and machine_type = '0' else
@@ -173,7 +176,8 @@ begin
 		basRomDataOSI when n_basRomCS = '0' and machine_type = '1' else
 		monitorRomData when n_monitorRomCS = '0' and machine_type = '0' and monitor_type = '0' else
 		monUKRomData when n_monitorRomCS = '0' and machine_type = '0' and monitor_type = '1' else
-		cegmonOSIRomData when n_monitorRomCS = '0' and machine_type = '1' else
+		cegmonOSIRomData when n_monitorRomCS = '0' and machine_type = '1' and monitor_type = '0'  else
+		SynmonRomData when n_monitorRomCS = '0' and machine_type = '1' and monitor_type = '1' and cpuAddress >=x"FF00"  else
 		aciaData when n_aciaCS = '0' else
 		ramDataOut when n_ramCS = '0' else
 		dispRamDataOutA when n_dispRamCS = '0' else
@@ -242,6 +246,13 @@ begin
 	(
 		address => cpuAddress(10 downto 0),
 		q => cegmonOSIRomData
+	);
+	
+	u14: entity work.SynmonRom
+	port map
+	(
+		address => cpuAddress(10 downto 0),
+		q => SynmonRomData
 	);
 
 	u5: entity work.bufferedUART
