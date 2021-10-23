@@ -182,7 +182,7 @@ begin
 		monUKRomData when n_monitorRomCS = '0' and machine_type = '0' and i_monitor_type = 1 else
 		WemonRomData when n_monitorRomCS = '0' and machine_type = '0' and i_monitor_type = 2 else
 		cegmonOSIRomData when n_monitorRomCS = '0' and machine_type = '1' and i_monitor_type = 0  else
-		SynmonRomData when n_monitorRomCS = '0' and machine_type = '1' and i_monitor_type = 1 and cpuAddress >=x"FF00"  else
+		SynmonRomData when n_monitorRomCS = '0' and machine_type = '1' and i_monitor_type = 1 and cpuAddress >=x"FD00"  else
 		aciaData when n_aciaCS = '0' else
 		ramDataOut when n_ramCS = '0' else
 		dispRamDataOutA when n_dispRamCS = '0' else
