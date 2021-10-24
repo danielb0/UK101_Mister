@@ -37,7 +37,7 @@ entity uk101 is
 		b				:	out std_logic;
 		resolution	:	in std_logic;
 		--colours		:	in std_logic_vector(1 downto 0);
-		monitor_type : in std_logic_vector(1 downto 0);
+		monitor_type : in std_logic_vector(2 downto 0);
 		machine_type	: in std_logic;
 		baud_rate : in std_logic;
 		hblank		:	out std_logic;
@@ -126,14 +126,14 @@ begin
 	serialClkCount2 <= c_9600BaudClkCount2 when baud_rate = '0' else c_300BaudClkCount2;
 	
 	i_cpuOverclock <= to_integer(unsigned(cpuOverclock));
-	i_monitor_type <= to_integer(unsigned(monitor_type));
+	i_monitor_type <= to_integer(unsigned(monitor_type(1 downto 0))) when machine_type='0' else to_integer(unsigned('0' & monitor_type(2 downto 2))) ;
 	charData <= charDataUK101 when machine_type = '0' else charDataOSI;
 	
 	n_memWR <= not(cpuClock) nand (not n_WR);
 
 	n_dispRamCS <= '0' when cpuAddress(15 downto 11) = "11010" else '1';
 	n_basRomCS <= '0' when cpuAddress(15 downto 13) = "101" else '1'; --8k
-	n_monitorRomCS	<= '0' when cpuAddress(15 downto 11) = "11111" and machine_type = '0' and i_monitor_type<2 else --uk101
+	n_monitorRomCS	<= '0' when cpuAddress(15 downto 11) = "11111" and machine_type = '0' and i_monitor_type < 2 else --uk101
 							'0' when cpuAddress(15 downto 12) = "1111" and machine_type = '0' and i_monitor_type = 2 else	--uk101 with wemon
 						'0' when cpuAddress(15 downto 11) = "11111" and machine_type = '1' and i_monitor_type = 1  else		-- 2K      $F800-$FFFF  (except $FC00-$FCFF)  C2/C4  
 						'0' when (cpuAddress(15 downto 11) = "11111" and cpuAddress(11 downto 8) /= "1100") and machine_type = '1' and i_monitor_type = 0  else		-- 2K      $F800-$FFFF  (except $FC00-$FCFF)  C2/C4
