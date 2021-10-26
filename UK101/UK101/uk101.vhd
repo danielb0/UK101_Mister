@@ -194,10 +194,10 @@ begin
 		cegmonOSIRomData when n_monitorRomCS = '0' and machine_type = '1' and i_monitor_type = 0  else
 		SynmonRomData when n_monitorRomCS = '0' and machine_type = '1' and i_monitor_type = 1 and cpuAddress >=x"FD00"  else
 		aciaData when n_aciaCS = '0' else
-		ramDataOut when n_ramCS = '0' and i_memory_size = 3 else
-		ram4KDataOut when n_ramCS = '0' and i_memory_size = 0 else
-		ram8KDataOut when n_ramCS = '0' and i_memory_size = 1 else
-		ram32KDataOut when n_ramCS = '0' and i_memory_size = 2 else
+		ramDataOut when n_ramCS = '0' else
+--		ram4KDataOut when n_ramCS = '0' and i_memory_size = 0 else
+--		ram8KDataOut when n_ramCS = '0' and i_memory_size = 1 else
+--		ram32KDataOut when n_ramCS = '0' and i_memory_size = 2 else
 		dispRamDataOutA when n_dispRamCS = '0' else
 		kbReadData when n_kbCS='0'
 		else x"FF";
@@ -244,36 +244,36 @@ begin
 		q => ramDataOut
 	);
 	
-	u16: entity work.ProgRam4K 
-	port map
-	(
-		address => cpuAddress(11 downto 0),
-		clock => clk,
-		data => cpuDataOut,
-		wren => not(n_memWR or n_ramCS),
-		q => ram4KDataOut
-	);
-	
-	u17: entity work.ProgRam8K 
-	port map
-	(
-		address => cpuAddress(12 downto 0),
-		clock => clk,
-		data => cpuDataOut,
-		wren => not(n_memWR or n_ramCS),
-		q => ram8KDataOut
-	);
-	
-	u18: entity work.ProgRam32K 
-	port map
-	(
-		address => cpuAddress(14 downto 0),
-		clock => clk,
-		data => cpuDataOut,
-		wren => not(n_memWR or n_ramCS),
-		q => ram32KDataOut
-	);
-	
+--	u16: entity work.ProgRam4K 
+--	port map
+--	(
+--		address => cpuAddress(11 downto 0),
+--		clock => clk,
+--		data => cpuDataOut,
+--		wren => not(n_memWR or n_ramCS),
+--		q => ram4KDataOut
+--	);
+--	
+--	u17: entity work.ProgRam8K 
+--	port map
+--	(
+--		address => cpuAddress(12 downto 0),
+--		clock => clk,
+--		data => cpuDataOut,
+--		wren => not(n_memWR or n_ramCS),
+--		q => ram8KDataOut
+--	);
+--	
+--	u18: entity work.ProgRam32K 
+--	port map
+--	(
+--		address => cpuAddress(14 downto 0),
+--		clock => clk,
+--		data => cpuDataOut,
+--		wren => not(n_memWR or n_ramCS),
+--		q => ram32KDataOut
+--	);
+--	
 	u4: entity work.CegmonRom
 	port map
 	(
