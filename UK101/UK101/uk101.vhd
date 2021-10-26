@@ -38,6 +38,7 @@ entity uk101 is
 		resolution	:	in std_logic;
 		--colours		:	in std_logic_vector(1 downto 0);
 		monitor_type : in std_logic_vector(2 downto 0);
+		memory_size : in std_logic_vector(2 downto 0);
 		machine_type	: in std_logic;
 		baud_rate : in std_logic;
 		hblank		:	out std_logic;
@@ -62,6 +63,9 @@ architecture struct of uk101 is
 	signal basRomData		: std_logic_vector(7 downto 0);
 	signal basRomDataOSI		: std_logic_vector(7 downto 0);
 	signal ramDataOut		: std_logic_vector(7 downto 0);
+	signal ram4KDataOut		: std_logic_vector(7 downto 0);
+	signal ram8KDataOut		: std_logic_vector(7 downto 0);
+	signal ram32KDataOut		: std_logic_vector(7 downto 0);
 	signal monitorRomData : std_logic_vector(7 downto 0);
 	signal monUKRomData : std_logic_vector(7 downto 0);
 	signal SynmonRomData : std_logic_vector(7 downto 0);
@@ -107,6 +111,7 @@ architecture struct of uk101 is
 	signal i_clockThreshold2 : integer range 0 to 25 := 0;
 	signal i_cpuOverclock : integer range 0 to 5 := 0;
 	signal i_monitor_type : integer range 0 to 3 := 0;
+	signal i_memory_size : integer range 0 to 3 := 0;
 
 
 
@@ -127,6 +132,7 @@ begin
 	
 	i_cpuOverclock <= to_integer(unsigned(cpuOverclock));
 	i_monitor_type <= to_integer(unsigned(monitor_type(1 downto 0))) when machine_type='0' else to_integer(unsigned('0' & monitor_type(2 downto 2))) ;
+	i_memory_size <= to_integer(unsigned(memory_size(2 downto 0)));
 	charData <= charDataUK101 when machine_type = '0' else charDataOSI;
 	
 	n_memWR <= not(cpuClock) nand (not n_WR);
@@ -139,7 +145,11 @@ begin
 						'0' when (cpuAddress(15 downto 11) = "11111" and cpuAddress(11 downto 8) /= "1100") and machine_type = '1' and i_monitor_type = 0  else		-- 2K      $F800-$FFFF  (except $FC00-$FCFF)  C2/C4
 					   '0' when cpuAddress(15 downto 8)  = "11110100" and machine_type = '1' and i_monitor_type = 0 else	   										-- 256byte $F400-$F4FF  (relocated FC00-FCFF block)
 					   '1';
-	n_ramCS <= not(n_dispRamCS and n_basRomCS and n_monitorRomCS and n_aciaCS and n_kbCS);
+	n_ramCS <= not(n_dispRamCS and n_basRomCS and n_monitorRomCS and n_aciaCS and n_kbCS) when i_memory_size = 3 else  --41K
+					'0' when cpuAddress(15 downto 12) = "0000" and i_memory_size = 0 else											--4k
+					'0' when cpuAddress(15 downto 13) = "000"  and i_memory_size = 1 else											--8k
+					'0' when cpuAddress(15) = '0' and i_memory_size = 2																	--32K
+					else '1';
 	n_aciaCS <= '0' when cpuAddress(15 downto 1) = "111100000000000" and machine_type = '0' and i_monitor_type < 2 else
 					'0' when cpuAddress(15 downto 1) = "111000000000000" and machine_type = '0' and i_monitor_type = 2 else
 					'0' when cpuAddress(15 downto 1) = "111111000000000" and machine_type = '1' else '1';
@@ -184,7 +194,10 @@ begin
 		cegmonOSIRomData when n_monitorRomCS = '0' and machine_type = '1' and i_monitor_type = 0  else
 		SynmonRomData when n_monitorRomCS = '0' and machine_type = '1' and i_monitor_type = 1 and cpuAddress >=x"FD00"  else
 		aciaData when n_aciaCS = '0' else
-		ramDataOut when n_ramCS = '0' else
+		ramDataOut when n_ramCS = '0' and i_memory_size = 3 else
+		ram4KDataOut when n_ramCS = '0' and i_memory_size = 0 else
+		ram8KDataOut when n_ramCS = '0' and i_memory_size = 1 else
+		ram32KDataOut when n_ramCS = '0' and i_memory_size = 2 else
 		dispRamDataOutA when n_dispRamCS = '0' else
 		kbReadData when n_kbCS='0'
 		else x"FF";
@@ -229,6 +242,36 @@ begin
 		data => cpuDataOut,
 		wren => not(n_memWR or n_ramCS),
 		q => ramDataOut
+	);
+	
+	u16: entity work.ProgRam4K 
+	port map
+	(
+		address => cpuAddress(11 downto 0),
+		clock => clk,
+		data => cpuDataOut,
+		wren => not(n_memWR or n_ramCS),
+		q => ram4KDataOut
+	);
+	
+	u17: entity work.ProgRam8K 
+	port map
+	(
+		address => cpuAddress(12 downto 0),
+		clock => clk,
+		data => cpuDataOut,
+		wren => not(n_memWR or n_ramCS),
+		q => ram8KDataOut
+	);
+	
+	u18: entity work.ProgRam32K 
+	port map
+	(
+		address => cpuAddress(14 downto 0),
+		clock => clk,
+		data => cpuDataOut,
+		wren => not(n_memWR or n_ramCS),
+		q => ram32KDataOut
 	);
 	
 	u4: entity work.CegmonRom
