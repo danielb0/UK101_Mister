@@ -138,7 +138,7 @@ begin
 	n_basRomCS <= '0' when cpuAddress(15 downto 13) = "101" else '1'; --8k
 	n_monitorRomCS	<= '0' when cpuAddress(15 downto 11) = "11111" and machine_type = '0' and i_monitor_type < 2 else --uk101
 							'0' when cpuAddress(15 downto 12) = "1111" and machine_type = '0' and i_monitor_type = 2 else	--uk101 with wemon
-						'0' when cpuAddress(15 downto 11) = "11111" and machine_type = '1' and i_monitor_type = 1  else		-- 2K      $F800-$FFFF  (except $FC00-$FCFF)  C2/C4  
+						'0' when cpuAddress(15 downto 11) = "11111" and machine_type = '1' and i_monitor_type = 1  else		--OSI with Synmon
 						'0' when (cpuAddress(15 downto 11) = "11111" and cpuAddress(11 downto 8) /= "1100") and machine_type = '1' and i_monitor_type = 0  else		-- 2K      $F800-$FFFF  (except $FC00-$FCFF)  C2/C4
 					   '0' when cpuAddress(15 downto 8)  = "11110100" and machine_type = '1' and i_monitor_type = 0 else	   										-- 256byte $F400-$F4FF  (relocated FC00-FCFF block)
 					   '1';
@@ -162,7 +162,7 @@ begin
 		x"10" when cpuAddress = X"FCE0" and i_cpuOverclock = 0 and machine_type = '0' else 	
 	
 		 -- CEGMON PATCH TO CORRECT AUTO-REPEAT IN FAST MODE(OSI)
-		x"A0" when cpuAddress = X"F4E0" and i_cpuOverclock = 4 and machine_type = '1' else -- Address = FCE0 and fastMode = 1 : CHANGE REPEAT RATE LOOP VALUE (was $10)
+		x"A0" when cpuAddress = X"F4E0" and i_cpuOverclock = 4 and machine_type = '1' else -- Address = F4E0 and fastMode = 1 : CHANGE REPEAT RATE LOOP VALUE (was $10)
 		x"80" when cpuAddress = X"F4E0" and i_cpuOverclock = 3 and machine_type = '1' else 
 		x"40" when cpuAddress = X"F4E0" and i_cpuOverclock = 2 and machine_type = '1' else 	
 		x"20" when cpuAddress = X"F4E0" and i_cpuOverclock = 1 and machine_type = '1' else 	
