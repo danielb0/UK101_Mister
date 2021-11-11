@@ -99,8 +99,8 @@ begin
 		charIn(i) <= charData(i) when machine_type='0' else charData(7-i);
 	end generate;
 	
-	totalPixels <= 270 when machine_type = '1' and resolution = '0' 
-					else 534;
+	totalPixels <= 264 when machine_type = '1' and resolution = '0' 
+					else 530;
 	rightBorder <= 230 when machine_type = '1' and resolution = '0' 
 					else 518;
 	leftBorder <= 39 when machine_type = '1' and resolution = '0'

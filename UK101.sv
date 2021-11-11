@@ -177,7 +177,7 @@ localparam CONF_STR = {
 	"O33,Load programs from,File,UART;",
 	"-;",
 	"O89,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
-	//"OCD,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%;",
+	"OCD,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%;",
 	"OFG,Scale,Normal,V-Integer,Narrower HV-Integer,Wider HV-Integer;",
 	//"O34,Colours,White on blue,White on black,Green on black,Yellow on black;",
 	"d5O55,Screen resolution,Low,High;",
