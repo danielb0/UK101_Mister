@@ -174,14 +174,14 @@ begin
 		
 		x"2F" when cpuAddress = x"FBBC" and resolution='0' and i_monitor_type = 0 and machine_type = '0' else -- CEGMON SWIDTH (was $47)
 		x"17" when cpuAddress = x"FBBC" and resolution='0' and i_monitor_type = 0 and machine_type = '1' else -- CEGMON SWIDTH (was $47)
-		x"00" when cpuAddress = x"FBBD" and resolution='0' and i_monitor_type = 0 and machine_type = '0' else -- CEGMON TOP L (was $0C (1st line) or $8C (3rd line))
+		x"0C" when cpuAddress = x"FBBD" and resolution='0' and i_monitor_type = 0 and machine_type = '0' else -- CEGMON TOP L (was $0C (1st line) or $8C (3rd line))
 		x"85" when cpuAddress = x"FBBF" and resolution='0' and i_monitor_type = 0 and machine_type = '0' else -- CEGMON BASE L (was $CC)
 		x"D3" when cpuAddress = x"FBC0" and resolution='0' and i_monitor_type = 0 and machine_type = '0' else -- CEGMON BASE H (was $D3)
 		x"57" when cpuAddress = x"FBBF" and resolution='0' and i_monitor_type = 0 and machine_type = '1' else -- CEGMON BASE L (was $CC)
 		x"D5" when cpuAddress = x"FBC0" and resolution='0' and i_monitor_type = 0 and machine_type = '1' else -- CEGMON BASE H (was $D3)
-		x"00" when cpuAddress = x"FBC2" and resolution='0' and i_monitor_type = 0 and machine_type = '0' else -- CEGMON STARTUP TOP L (was $0C (1st line) or $8C (3rd line))
-		x"00" when cpuAddress = x"FBC5" and resolution='0' and i_monitor_type = 0 and machine_type = '0' else -- CEGMON STARTUP TOP L (was $0C (1st line) or $8C (3rd line))
-		x"00" when cpuAddress = x"FBCB" and resolution='0' and i_monitor_type = 0 and machine_type = '0' else -- CEGMON STARTUP TOP L (was $0C (1st line) or $8C (3rd line))
+		x"0C" when cpuAddress = x"FBC2" and resolution='0' and i_monitor_type = 0 and machine_type = '0' else -- CEGMON STARTUP TOP L (was $0C (1st line) or $8C (3rd line))
+		x"0C" when cpuAddress = x"FBC5" and resolution='0' and i_monitor_type = 0 and machine_type = '0' else -- CEGMON STARTUP TOP L (was $0C (1st line) or $8C (3rd line))
+		x"0C" when cpuAddress = x"FBCB" and resolution='0' and i_monitor_type = 0 and machine_type = '0' else -- CEGMON STARTUP TOP L (was $0C (1st line) or $8C (3rd line))
 		x"08" when cpuAddress = x"FE62" and resolution='0' and i_monitor_type = 0 and machine_type = '0' else -- CEGMON CLR SCREEN SIZE (was $08)
 		x"D4" when cpuAddress = x"FB8B" and resolution='0' and i_monitor_type = 0 and machine_type = '0' else -- CEGMON SCREEN BOTTOM H (was $D4) - Part of CTRL-F code
 		x"D3" when cpuAddress = x"FE3B" and resolution='0' and i_monitor_type = 0 and machine_type = '0' else -- CEGMON SCREEN BOTTOM H - 1 (was $D3) - Part of CTRL-A code
