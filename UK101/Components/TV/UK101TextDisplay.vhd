@@ -101,7 +101,7 @@ begin
 	
 	totalPixels <= 264 when machine_type = '1' and resolution = '0' 
 					else 530;
-	rightBorder <= 230 when machine_type = '1' and resolution = '0' 
+	rightBorder <= 246 when machine_type = '1' and resolution = '0' 
 					else 518;
 	leftBorder <= 39 when machine_type = '1' and resolution = '0'
 					else 7;
