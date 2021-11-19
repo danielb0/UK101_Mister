@@ -291,7 +291,7 @@ wire [3:0] ce_pix_count;
 always_comb
 begin
 	if (machine_type == 1'b0)
-		ce_pix_count = 5;
+		ce_pix_count = 11;
 	else
 		begin
 			if (resolution == 1'b0)
