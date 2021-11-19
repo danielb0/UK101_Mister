@@ -79,7 +79,7 @@ architecture struct of uk101 is
 	signal n_aciaCS		: std_logic;
 	signal n_kbCS			: std_logic;
 	
-	signal dispAddrB 		: std_logic_vector(10 downto 0);
+	signal dispAddrB 		: std_logic_vector(9 downto 0);
 	signal dispRamDataOutA : std_logic_vector(7 downto 0);
 	signal dispRamDataOutB : std_logic_vector(7 downto 0);
 	signal charAddr 		: std_logic_vector(10 downto 0);
@@ -193,7 +193,7 @@ begin
 		x"08" when cpuAddress = x"FE62" and resolution='0' and i_monitor_type = 0 and machine_type = '0' else -- CEGMON CLR SCREEN SIZE (was $08)
 		x"D4" when cpuAddress = x"FB8B" and resolution='0' and i_monitor_type = 0 and machine_type = '0' else -- CEGMON SCREEN BOTTOM H (was $D4) - Part of CTRL-F code
 		x"D3" when cpuAddress = x"FE3B" and resolution='0' and i_monitor_type = 0 and machine_type = '0' else -- CEGMON SCREEN BOTTOM H - 1 (was $D3) - Part of CTRL-A code
-		basRomData when n_basRomCS = '0' and machine_type = '0' else
+		basRomDataOSI when n_basRomCS = '0' and machine_type = '0' else
 		basRomDataOSI when n_basRomCS = '0' and machine_type = '1' else
 		monitorRomData when n_monitorRomCS = '0' and machine_type = '0' and i_monitor_type = 0 else
 		monUKRomData when n_monitorRomCS = '0' and machine_type = '0' and i_monitor_type = 1 else
@@ -376,7 +376,7 @@ begin
 	u8: entity work.DisplayRam 
 	port map
 	(
-		address_a => cpuAddress(10 downto 0),
+		address_a => cpuAddress(9 downto 0),
 		address_b => dispAddrB,
 		clock	=> clk,
 		data_a => cpuDataOut,
