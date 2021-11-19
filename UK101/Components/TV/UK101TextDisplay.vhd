@@ -95,7 +95,7 @@ begin
 	
 	--charIn <= charData(7 downto 0) when machine_type = '0' else charData(0 to 7);
 	gen: for i in 0 to 7 generate
-		charIn(i) <= charData(i) when machine_type='0' else charData(7-i);
+		charIn(i) <= charData(7-i);
 	end generate;
 	
 	totalPixels <= 267 when resolution = '0' 

@@ -130,7 +130,7 @@ begin
 	i_cpuOverclock <= to_integer(unsigned(cpuOverclock));
 	i_monitor_type <= to_integer(unsigned(monitor_type(1 downto 0))) when machine_type='0' else to_integer(unsigned('0' & monitor_type(2 downto 2))) ;
 	i_memory_size <= to_integer(unsigned(memory_size(2 downto 0)));
-	charData <= charDataUK101 when machine_type = '0' else charDataOSI;
+	charData <= charDataOSI;
 	
 	n_memWR <= not(cpuClock) nand (not n_WR);
 
