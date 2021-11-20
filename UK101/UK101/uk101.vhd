@@ -160,11 +160,11 @@ begin
  
 	cpuDataIn <=
 		    -- CEGMON PATCH TO CORRECT AUTO-REPEAT IN FAST MODE(UK101)
-		x"A0" when cpuAddress = X"FCE0" and i_cpuOverclock = 4 and i_machine_type = 0 else -- Address = FCE0 and fastMode = 1 : CHANGE REPEAT RATE LOOP VALUE (was $10)
-		x"80" when cpuAddress = X"FCE0" and i_cpuOverclock = 3 and i_machine_type = 0 else 
-		x"40" when cpuAddress = X"FCE0" and i_cpuOverclock = 2 and i_machine_type = 0 else 	
-		x"20" when cpuAddress = X"FCE0" and i_cpuOverclock = 1 and i_machine_type = 0 else 	
-		x"10" when cpuAddress = X"FCE0" and i_cpuOverclock = 0 and i_machine_type = 0 else 	
+		x"A0" when cpuAddress = X"FCE0" and i_cpuOverclock = 4 and (i_machine_type = 0 or i_machine_type = 2) else -- Address = FCE0 and fastMode = 1 : CHANGE REPEAT RATE LOOP VALUE (was $10)
+		x"80" when cpuAddress = X"FCE0" and i_cpuOverclock = 3 and (i_machine_type = 0 or i_machine_type = 2) else 
+		x"40" when cpuAddress = X"FCE0" and i_cpuOverclock = 2 and (i_machine_type = 0 or i_machine_type = 2) else 	
+		x"20" when cpuAddress = X"FCE0" and i_cpuOverclock = 1 and (i_machine_type = 0 or i_machine_type = 2) else 	
+		x"10" when cpuAddress = X"FCE0" and i_cpuOverclock = 0 and (i_machine_type = 0 or i_machine_type = 2) else 	
 	
 		 -- CEGMON PATCH TO CORRECT AUTO-REPEAT IN FAST MODE(OSI)
 		x"A0" when cpuAddress = X"F4E0" and i_cpuOverclock = 4 and i_machine_type = 1 else -- Address = F4E0 and fastMode = 1 : CHANGE REPEAT RATE LOOP VALUE (was $10)
