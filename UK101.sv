@@ -244,7 +244,7 @@ hps_io #(.CONF_STR(CONF_STR),.PS2DIV(2000)) hps_io
 	.ps2_kbd_clk_out(PS2_CLK),
 	.ps2_kbd_data_out(PS2_DAT),
 	.forced_scandoubler(forced_scandoubler),
-	.status_menumask({status[28],grey_res_menu, status[20],status[6:3]}),
+	.status_menumask({status[28],grey_res_menu, status[27],status[6:3]}),
 	.gamma_bus(gamma_bus),
 	
 	.ioctl_download(ioctl_download),
