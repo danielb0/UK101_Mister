@@ -183,7 +183,7 @@ localparam CONF_STR = {
 	//"O34,Colours,White on blue,White on black,Green on black,Yellow on black;",
 	"d5O55,Screen resolution,Low,High;",
 	"-;",
-	"OKK,Machine,UK101,OSI;",
+	"ORS,Machine,UK101,OSI;",
 	"OHJ,Clock speed,1Mhz,2Mhz,4Mhz,8Mhz,10Mhz;",
 	"OOQ,Memory Size,4K,8K,32K,41K;",
 	"H4OLM,Monitor,Cegmon,MonUK02,Wemon;",
@@ -209,7 +209,7 @@ wire loadFrom = status[3];
 wire resolution;
 wire [1:0]monitor_type;
 wire baud_rate=status[7];
-wire machine_type=status[20];
+wire machine_type=status[28:27];
 //assign resolution = status[5];
 wire forced_scandoubler;
 wire [21:0] gamma_bus;
@@ -349,7 +349,7 @@ uk101 uk101
 	//.colours(colour_scheme),
 	.resolution(resolution),
 	.monitor_type(status[23:21]),
-	.machine_type(machine_type),
+	.machine_type(status[28:27]),
 	.memory_size(status[26:24]),
 	.baud_rate(baud_rate),
 	.rxd(UART_RXD),

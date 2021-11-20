@@ -19,11 +19,11 @@ library ieee;
 	use ieee.numeric_std.all;
 	use ieee.std_logic_unsigned.all;
 
-entity UK101TextDisplay is
+entity C1PTextDisplay is
 	port (
 		charAddr : out std_LOGIC_VECTOR(10 downto 0);
 		charData : in std_LOGIC_VECTOR(7 downto 0);
-		dispAddr : out std_LOGIC_VECTOR(10 downto 0);
+		dispAddr : out std_LOGIC_VECTOR(9 downto 0);
 		dispData : in std_LOGIC_VECTOR(7 downto 0);
 		clk    	: in  std_logic;
 		ce_pix	: in std_logic; 	
@@ -36,11 +36,11 @@ entity UK101TextDisplay is
 		vsync_out  	: out  std_logic;
 		hblank_out  	: out  std_logic;
 		vblank_out 	: out  std_logic;
-		machine_type : in integer range 0 to 5
+		machine_type : in std_logic
    );
-end UK101TextDisplay;
+end C1PTextDisplay;
 
-architecture rtl of UK101TextDisplay is
+architecture rtl of C1PTextDisplay is
 
 	signal hSync   : std_logic := '1';
 	signal vSync   : std_logic := '1';
@@ -61,7 +61,7 @@ architecture rtl of UK101TextDisplay is
 	signal	charVert: STD_LOGIC_VECTOR(4 DOWNTO 0); 
 	signal	charScanLine: STD_LOGIC_VECTOR(3 DOWNTO 0); 
 
-	signal	charHoriz: STD_LOGIC_VECTOR(5 DOWNTO 0); 
+	signal	charHoriz: STD_LOGIC_VECTOR(4 DOWNTO 0); 
 	signal	charBit: STD_LOGIC_VECTOR(3 DOWNTO 0); 
 	signal	charHeight: STD_LOGIC_VECTOR(3 DOWNTO 0); 
 
@@ -89,19 +89,18 @@ begin
 	sync <= hSync and vSync;
 	
 	dispAddr <= charVert & charHoriz;
-	charAddr <= dispData & charScanLine(3 DOWNTO 1) when resolution = '0' and machine_type = 0
-					else dispData & charScanLine(2 downto 0);
-	charHeight(3 downto 0)<= "1111" when resolution = '0' and machine_type= 0 else "0111";
+	charAddr <= dispData & charScanLine(2 downto 0);
+	charHeight(3 downto 0) <= "0111";
 
 	
 	--charIn <= charData(7 downto 0) when machine_type = '0' else charData(0 to 7);
 	gen: for i in 0 to 7 generate
-		charIn(i) <= charData(i) when machine_type=0 else charData(7-i);
+		charIn(i) <= charData(7-i);
 	end generate;
 	
-	totalPixels <= 267 when machine_type = 1 and resolution = '0' 
+	totalPixels <= 267 when resolution = '0' 
 					else 530;
-	rightBorder <= 262 when machine_type = 1 and resolution = '0' 
+	rightBorder <= 262 when resolution = '0' 
 					else 518;
 	leftBorder <= 7;
 	topBorder <= 37;		
