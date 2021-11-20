@@ -88,7 +88,8 @@ begin
 	b <= video;
 	sync <= hSync and vSync;
 	
-	dispAddr <= charVert & charHoriz;
+	dispAddr <= charVert & charHoriz when machine_type = 0 or machine_type = 1 
+	else '0' & charVert & charHoriz(4 downto 0);
 	charAddr <= dispData & charScanLine(3 DOWNTO 1) when resolution = '0' and machine_type = 0
 					else dispData & charScanLine(2 downto 0);
 	charHeight(3 downto 0)<= "1111" when resolution = '0' and machine_type= 0 else "0111";
@@ -99,9 +100,9 @@ begin
 		charIn(i) <= charData(i) when machine_type=0 else charData(7-i);
 	end generate;
 	
-	totalPixels <= 267 when machine_type = 1 and resolution = '0' 
+	totalPixels <= 267 when (machine_type = 1 or machine_type = 2) and resolution = '0' 
 					else 530;
-	rightBorder <= 262 when machine_type = 1 and resolution = '0' 
+	rightBorder <= 262 when (machine_type = 1 or machine_type = 2) and resolution = '0' 
 					else 518;
 	leftBorder <= 7;
 	topBorder <= 37;		

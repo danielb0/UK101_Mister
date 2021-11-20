@@ -68,6 +68,7 @@ architecture struct of uk101 is
 	signal SynmonRomData : std_logic_vector(7 downto 0);
 	signal WemonRomData : std_logic_vector(7 downto 0);
 	signal cegmonOSIRomData : std_logic_vector(7 downto 0);
+	signal cegmonC1PRomData : std_logic_vector(7 downto 0);
 	signal aciaData		: std_logic_vector(7 downto 0);
 
 	signal n_memWR			: std_logic;
@@ -136,9 +137,11 @@ begin
 	
 	n_memWR <= not(cpuClock) nand (not n_WR);
 
-	n_dispRamCS <= '0' when cpuAddress(15 downto 11) = "11010" else '1';
+	n_dispRamCS <= '0' when cpuAddress(15 downto 11) = "11010" and  (i_machine_type = 0 or i_machine_type = 1) else
+						'0' when cpuAddress(15 downto 10) = "110100" and  i_machine_type = 2 else 
+						'1';
 	n_basRomCS <= '0' when cpuAddress(15 downto 13) = "101" else '1'; --8k
-	n_monitorRomCS	<= '0' when cpuAddress(15 downto 11) = "11111" and i_machine_type = 0 and i_monitor_type < 2 else --uk101
+	n_monitorRomCS	<= '0' when cpuAddress(15 downto 11) = "11111" and ((i_machine_type = 0 and i_monitor_type < 2) or i_machine_type = 2) else --uk101
 							'0' when cpuAddress(15 downto 12) = "1111" and i_machine_type = 0 and i_monitor_type = 2 else	--uk101 with wemon
 						'0' when cpuAddress(15 downto 11) = "11111" and i_machine_type = 1 and i_monitor_type = 1  else		--OSI with Synmon
 						'0' when (cpuAddress(15 downto 11) = "11111" and cpuAddress(11 downto 8) /= "1100") and i_machine_type = 1 and i_monitor_type = 0  else		-- 2K      $F800-$FFFF  (except $FC00-$FCFF)  C2/C4
@@ -149,7 +152,7 @@ begin
 					'0' when cpuAddress(15 downto 13) = "000"  and i_memory_size = 1 else											--8k
 					'0' when cpuAddress(15) = '0' and i_memory_size = 2																	--32K
 					else '1';
-	n_aciaCS <= '0' when cpuAddress(15 downto 1) = "111100000000000" and i_machine_type = 0 and i_monitor_type < 2 else
+	n_aciaCS <= '0' when cpuAddress(15 downto 1) = "111100000000000" and ((i_machine_type = 0 and i_monitor_type < 2) or i_machine_type = 2) else
 					'0' when cpuAddress(15 downto 1) = "111000000000000" and i_machine_type = 0 and i_monitor_type = 2 else
 					'0' when cpuAddress(15 downto 1) = "111111000000000" and i_machine_type = 1 else '1';
 	n_kbCS <= '0' when cpuAddress(15 downto 10) = "110111" else '1';
@@ -196,11 +199,12 @@ begin
 		x"D4" when cpuAddress = x"FB8B" and resolution='0' and i_monitor_type = 0 and i_machine_type = 0 else -- CEGMON SCREEN BOTTOM H (was $D4) - Part of CTRL-F code
 		x"D3" when cpuAddress = x"FE3B" and resolution='0' and i_monitor_type = 0 and i_machine_type = 0 else -- CEGMON SCREEN BOTTOM H - 1 (was $D3) - Part of CTRL-A code
 		basRomData when n_basRomCS = '0' and i_machine_type = 0 else
-		basRomDataOSI when n_basRomCS = '0' and i_machine_type = 1 else
+		basRomDataOSI when n_basRomCS = '0' and (i_machine_type = 1 or i_machine_type = 2) else
 		monitorRomData when n_monitorRomCS = '0' and i_machine_type = 0 and i_monitor_type = 0 else
 		monUKRomData when n_monitorRomCS = '0' and i_machine_type = 0 and i_monitor_type = 1 else
 		WemonRomData when n_monitorRomCS = '0' and i_machine_type = 0 and i_monitor_type = 2 else
 		cegmonOSIRomData when n_monitorRomCS = '0' and i_machine_type = 1 and i_monitor_type = 0  else
+		cegmonC1PRomData when n_monitorRomCS = '0' and i_machine_type = 2 else
 		SynmonRomData when n_monitorRomCS = '0' and i_machine_type = 1 and i_monitor_type = 1 and cpuAddress >=x"FD00"  else
 		aciaData when n_aciaCS = '0' else
 		ramDataOut when n_ramCS = '0' else
@@ -270,6 +274,13 @@ begin
 	(
 		address => cpuAddress(10 downto 0),
 		q => cegmonOSIRomData
+	);
+	
+	u16: entity work.CegmonRomC1P
+	port map
+	(
+		address => cpuAddress(10 downto 0),
+		q => cegmonC1PRomData
 	);
 	
 	u14: entity work.SynmonRom
