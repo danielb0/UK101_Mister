@@ -181,7 +181,8 @@ localparam CONF_STR = {
 	"OCD,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%;",
 	"OFG,Scale,Normal,V-Integer,Narrower HV-Integer,Wider HV-Integer;",
 	//"O34,Colours,White on blue,White on black,Green on black,Yellow on black;",
-	"d5D6O56,Screen resolution,Low,High,Auto;",
+	"H4d5D6O4,Screen resolution,Low,High;",
+	"h4d5D6O56,Screen resolution,Low,High,Auto;",
 	"-;",
 	"ORS,Machine,UK101,OSI C2P,OSI C1P;",
 	"OHJ,Clock speed,1Mhz,2Mhz,4Mhz,8Mhz,10Mhz;",
@@ -229,8 +230,10 @@ if (machine_type==2'b00 && (monitor_type==2'b01 || monitor_type == 2'b10))
 	resolution = 2'b00;
 else if (machine_type == 2'b10)
 	resolution = 2'b00;
-else
+else if (machine_type == 2'b01)
 	resolution = status[6:5];
+else
+	resolution = {1'b0,status[4]};
 end
 
 

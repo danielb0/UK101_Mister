@@ -1,5 +1,6 @@
 -- OutLatch.vhd
 -- Implement an n-bit output latch
+-- Taken from https://github.com/douggilliland/MultiComp/blob/master/MultiComp%20(VHDL%20Template)/Components/IO/OutLatch.vhd
 	
 library ieee ;
 use ieee.std_logic_1164.all;
