@@ -35,7 +35,8 @@ entity uk101 is
 		r				:	out std_logic;
 		g				:	out std_logic;
 		b				:	out std_logic;
-		resolution	:	in std_logic;
+		screen_mode	:	in std_logic_vector(1 downto 0);
+		actual_res	:	out std_logic;
 		--colours		:	in std_logic_vector(1 downto 0);
 		monitor_type : in std_logic_vector(2 downto 0);
 		memory_size : in std_logic_vector(2 downto 0);
@@ -79,6 +80,7 @@ architecture struct of uk101 is
 	signal n_monitorRomCS : std_logic;
 	signal n_aciaCS		: std_logic;
 	signal n_kbCS			: std_logic;
+	signal n_iocs			: std_logic;
 	
 	signal dispAddrB 		: std_logic_vector(10 downto 0);
 	signal dispRamDataOutA : std_logic_vector(7 downto 0);
@@ -111,11 +113,13 @@ architecture struct of uk101 is
 	signal i_monitor_type : integer range 0 to 3 := 0;
 	signal i_memory_size : integer range 0 to 3 := 0;
 	signal i_machine_type : integer range 0 to 3 := 0;
-
-
+	signal latchedbits : std_logic_vector(7 downto 0);
+	signal resolution : std_logic;
 
 begin
 
+	resolution <= latchedbits(0) when i_machine_type=1 and screen_mode(1)='1' else screen_mode(0);
+	actual_res <= resolution;
 	i_clockThreshold1 <= 49 when i_cpuOverclock = 0 else 	--1Mhz
 								23 when i_cpuOverclock = 1 else	--2 Mhz
 								11 when i_cpuOverclock = 2 else	--4 Mhz
@@ -147,6 +151,7 @@ begin
 						'0' when (cpuAddress(15 downto 11) = "11111" and cpuAddress(11 downto 8) /= "1100") and i_machine_type = 1 and i_monitor_type = 0  else		-- 2K      $F800-$FFFF  (except $FC00-$FCFF)  C2/C4
 					   '0' when cpuAddress(15 downto 8)  = "11110100" and i_machine_type = 1 and i_monitor_type = 0 else	   										-- 256byte $F400-$F4FF  (relocated FC00-FCFF block)
 					   '1';
+	n_iocs <= '0' when cpuAddress(15 downto 0 ) = X"DE00" and i_machine_type = 1 else '1'; 						
 	n_ramCS <= not(n_dispRamCS and n_basRomCS and n_monitorRomCS and n_aciaCS and n_kbCS) when i_memory_size = 3 else  --41K
 					'0' when cpuAddress(15 downto 12) = "0000" and i_memory_size = 0 else											--4k
 					'0' when cpuAddress(15 downto 13) = "000"  and i_memory_size = 1 else											--8k
@@ -409,6 +414,16 @@ begin
 		A	=> kbRowSel,
 		KEYB	=> kbReadData,
 		machine_type => i_machine_type
+	);
+	
+	
+	DisplayRegister	:	entity work.OutLatch
+	port map (
+		dataIn	=> cpuDataOut,
+		clock		=> clk,
+		load		=> n_iocs,
+		clear		=> n_reset,
+		latchOut	=> latchedbits
 	);
 	
 	process (n_kbCS,n_memWR)
